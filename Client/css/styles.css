@@ -1,0 +1,51 @@
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+}
+
+canvas {
+    display: block;
+}
+
+#spectrum {
+    display: block;
+    z-index: 1000;
+    position: absolute;
+    border: 1px solid white;
+}
+
+#choppiness {
+    top: 420px;
+    width: 128px;
+    height: 1px;
+    z-index: 1000;
+    position: absolute;
+}
+
+#spacial {
+    display: block;
+    z-index: 1000;
+    position: absolute;
+    top: 256px;
+    border: 1px solid white
+}
+
+#hu {
+    display: block;
+    z-index: 1000;
+    position: absolute;
+    top: 128px;
+    border: 1px solid white
+}
+
+#panel {
+    background-color: rgba(255, 255, 255, 0.5);
+    z-index: 1000;
+    position: absolute;
+    width: 130px;
+    display: block;
+    height: 100vh;
+}

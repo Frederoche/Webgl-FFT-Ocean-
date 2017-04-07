@@ -1,0 +1,7 @@
+{
+    "files.autoSave": "off",
+    "editor.renderWhitespace": "all",
+    "editor.wordWrap": "off",
+    "editor.folding": false,
+    "html.format.enable": false
+}

@@ -1,0 +1,12 @@
+{
+    "compileOnSave": false,
+    "compilerOptions": {
+        "target": "es5",
+        "module": "commonjs",
+        "sourceMap": true,
+        "outDir": "Javascript",
+        "out": "../Javascript",
+        "watch": true,
+        "command": "tsc"
+    }
+}
