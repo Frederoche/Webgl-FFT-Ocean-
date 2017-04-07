@@ -1,0 +1,23 @@
+{
+    "name": "webgl-fft-ocean",
+    "version": "1.0.0",
+    "description": "Webgl Ocean based on Tessendorf paper. Implementing of Phillips spectrum and its inverse FFT.",
+    "main": "Licence.js",
+    "scripts": {
+        "start": "node app.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Frederoche/Webgl-FFT-Ocean-.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/Frederoche/Webgl-FFT-Ocean-/issues"
+    },
+    "homepage": "https://github.com/Frederoche/Webgl-FFT-Ocean-#readme",
+    "dependencies": {
+        "express": "^4.15.2"
+    }
+}
