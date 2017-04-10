@@ -7,4 +7,4 @@ Small program written in typescript. It displays a wave constructed by the inver
 <img src="https://github.com/Frederoche/Webgl-FFT-Ocean-/raw/master/waves2.PNG" width="600" style="max-width:100%;">
 
 
-Link To demo : https://mighty-crag-23655.herokuapp.com/
+<a href="https://mighty-crag-23655.herokuapp.com/">Demo</a>
