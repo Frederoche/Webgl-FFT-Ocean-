@@ -1,5 +1,5 @@
 # Webgl-FFT-Ocean-
-Webgl Ocean based on Tessendorf paper. Implementing of Phillips spectrum and its inverse FFT.
+Webgl Ocean based on Tessendorf paper. Implementation of Phillips spectrum and its inverse FFT.
 
 Small program written in typescript. It displays a wave constructed by the inverse FFT of the Phillips spectrum.
 
