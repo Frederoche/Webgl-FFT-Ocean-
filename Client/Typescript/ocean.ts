@@ -154,7 +154,7 @@ window.onload = () => {
     canvas.width    = window.innerWidth;
     canvas.height   = window.innerHeight;
 
-    let gl          = <WebGLRenderingContext> canvas.getContext('webgl',{antialias:true});
+    let gl          = <WebGLRenderingContext> canvas.getContext('experimental-webgl',{antialias:true});
 
     var engine      = new Ocean.Engine(gl, canvas, gl.TRIANGLES); 
 
