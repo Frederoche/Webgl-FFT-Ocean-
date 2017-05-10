@@ -38,14 +38,14 @@
     </script>
     <script id="fragmentShader" type="x-shader/x-fragment">
         precision highp float; precision highp sampler2D; varying vec2 texcoord; uniform sampler2D displacement; uniform sampler2D reflectionSampler; uniform sampler2D refractionSampler; uniform vec3 cameraPosition; varying vec4 wPosition; varying vec4 normalWorld;
-        varying vec4 pos; varying vec2 mirroredtexCoord; vec3 calcNormals(sampler2D text, vec2 texcoords) { float texel = 1.0 / 64.0; float texelSize = 1.0 / 32.0; vec3 center = texture2D(text, texcoords).xyz; vec3 left = vec3(-texelSize, 0.0,0.0) + texture2D(text,
-        texcoords + vec2(-texel, 0.0)).xyz - center; vec3 right = vec3(texelSize, 0.0, 0.0) + texture2D(text, texcoords + vec2(texel, 0.0)).xyz - center; vec3 bottom = vec3(0.0, 0.0, texelSize) + texture2D(text, texcoords+ vec2(0.0, texel)).xyz - center;
-        vec3 top = vec3(0.0, 0.0, -texelSize) + texture2D(text, texcoords + vec2(0.0, -texel)).xyz - center; vec3 topRight = cross(right, top); vec3 topLeft = cross(top, left); vec3 bottomLeft = cross(left, bottom); vec3 bottomRight = cross(bottom, right);
-        return normalize(topRight + topLeft + bottomLeft + bottomRight); } void main(void) { vec3 LIGHTCOLOR = vec3(0.8, 0.8, 0.8); vec3 SEA_WATER_COLOR = vec3(0.8,0.9,0.6); vec4 LIGHT_POSITION = vec4(2000.0,300.0,-1000.0, 1.0); vec3 lightDir = normalize(LIGHT_POSITION.xyz
-        - wPosition.xyz); vec3 view = normalize(cameraPosition - wPosition.xyz); vec3 normal = calcNormals(displacement, texcoord); vec2 modtexcoord = mirroredtexCoord; modtexcoord.x = modtexcoord.x ; modtexcoord.y = modtexcoord.y; vec3 refr = refract(view,
-        normal, -2.2); vec3 refl = reflect(view, normal); vec4 refractionTex = texture2D(reflectionSampler, modtexcoord - 0.05 * refl.xy); vec4 reflectionTex = texture2D(refractionSampler, modtexcoord - 0.05 * refr.xy); float diffuseFactor = clamp(dot(normal,
-        lightDir.xyz), 0.0, 1.0); float fresnel = 0.02 + 0.98*pow(1.0 - dot(normal, view), 5.0); vec3 refraction = vec3(0.13,0.2,0.22) + diffuseFactor * SEA_WATER_COLOR*0.25; vec3 color = ((refractionTex.xyz + refraction)*(1.0-fresnel)+ (fresnel)* (reflectionTex.xyz
-        + LIGHTCOLOR))*0.75; float specular = pow(max(0.0, dot(reflect(lightDir, normal), -view)),1000.0); color+= specular * LIGHTCOLOR * 10.0; gl_FragColor = vec4(color.xyz, 1.0); }
+        varying vec4 pos; varying vec2 mirroredtexCoord; vec3 calcNormals(sampler2D text, vec2 texcoords) { float texel = 1.0 / 64.0; float texelSize = 1.0 / 32.0; vec3 center = texture2D(text, texcoords).xyz; vec3 left = vec3(-texelSize, 0.0,0.0) + texture2D(text,texcoords
+        + vec2(-texel, 0.0)).xyz - center; vec3 right = vec3(texelSize, 0.0, 0.0) + texture2D(text, texcoords + vec2(texel, 0.0)).xyz - center; vec3 bottom = vec3(0.0, 0.0, texelSize) + texture2D(text, texcoords+ vec2(0.0, texel)).xyz - center; vec3 top
+        = vec3(0.0, 0.0, -texelSize) + texture2D(text, texcoords + vec2(0.0, -texel)).xyz - center; vec3 topRight = cross(right, top); vec3 topLeft = cross(top, left); vec3 bottomLeft = cross(left, bottom); vec3 bottomRight = cross(bottom, right); return
+        normalize(topRight + topLeft + bottomLeft + bottomRight); } void main(void) { vec3 LIGHTCOLOR = vec3(0.8, 0.8, 0.8); vec3 SEA_WATER_COLOR = vec3(0.8,0.9,0.6); vec4 LIGHT_POSITION = vec4(2000.0,300.0,-1000.0, 1.0); vec3 lightDir = normalize(LIGHT_POSITION.xyz
+        - pos.xyz); vec3 view = normalize(cameraPosition - wPosition.xyz); vec3 normal = calcNormals(displacement, texcoord); vec2 modtexcoord = mirroredtexCoord; modtexcoord.x = modtexcoord.x ; modtexcoord.y = modtexcoord.y; vec3 refr = refract(view,
+        normal, 1.33); vec3 refl = reflect(view, normal); vec4 refractionTex = texture2D(reflectionSampler, modtexcoord - 0.05 * refr.xy); vec4 reflectionTex = texture2D(refractionSampler, modtexcoord - 0.05 * refl.xy); float diffuseFactor = clamp(dot(normal,lightDir.xyz),
+        0.0, 1.0); float fresnel = 0.02 + 0.98*pow(1.0 - dot(normal, view), 5.0); vec3 refraction = vec3(0.13,0.2,0.22) + diffuseFactor * SEA_WATER_COLOR*0.25; vec3 color = ((refractionTex.xyz + refraction)*(1.0-fresnel)+ (fresnel)* (reflectionTex.xyz+
+        LIGHTCOLOR*0.75)); float specular = pow(max(0.0, dot(reflect(lightDir, normal), -view)),1000.0); color+= specular * LIGHTCOLOR * 100.0; gl_FragColor = vec4(1.0 - exp(-color.xyz*color.xyz), 1.0); }
     </script>
 </head>
 
