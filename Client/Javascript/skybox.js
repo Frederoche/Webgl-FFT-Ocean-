@@ -1,25 +1,31 @@
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var Ocean;
 (function (Ocean) {
     var SkyBox = (function (_super) {
         __extends(SkyBox, _super);
         function SkyBox(gl, size) {
-            _super.call(this, gl);
-            this.gl = gl;
-            this.size = size;
-            this.indices = [];
-            this.texture = new Ocean.Texture(this.gl, 256).createTexture();
-            _super.prototype.createProgram.call(this, "skyBoxVertexShader", "skyBoxfragmentShader", false);
+            var _this = _super.call(this, gl) || this;
+            _this.gl = gl;
+            _this.size = size;
+            _this.indices = [];
+            _this.texture = new Ocean.Texture(_this.gl, 256).createTexture();
+            _super.prototype.createProgram.call(_this, "skyBoxVertexShader", "skyBoxfragmentShader", false);
+            return _this;
         }
         SkyBox.prototype.create = function () {
             var vertices = [-1, -1, -1, 0.25, 2.0 / 3.0,
                 -1, -1, 1, 0.25, 1.0,
-                1, -1, 1, 0.5, 2.0 / 3.0,
-                1, -1, -1, 0.5, 1.0,
+                1, -1, 1, 0.5, 1.0,
+                1, -1, -1, 0.5, 2.0 / 3.0,
                 -1, 1, -1, 0.25, 1.0 / 3.0,
                 -1, 1, 1, 0.25, 0.0,
                 1, 1, 1, 0.5, 0.0,
@@ -53,8 +59,13 @@ var Ocean;
             this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint8Array(this.indices), this.gl.STATIC_DRAW);
             this.gl.useProgram(null);
         };
-        SkyBox.prototype.render = function (projMatrix, viewMatrix) {
+        SkyBox.prototype.render = function (projMatrix, viewMatrix, isclipped) {
             this.gl.useProgram(this.program);
+            this.gl.uniform4f(this.program.clipPlane, 0, -1, 0, -5);
+            if (isclipped === true)
+                this.gl.uniform1f(this.program.isclipped, 1.0);
+            else
+                this.gl.uniform1f(this.program.isclipped, 0.0);
             this.gl.uniformMatrix4fv(this.program.projectionMatrix, false, projMatrix);
             this.gl.uniformMatrix4fv(this.program.viewMatrixMatrix, false, viewMatrix);
             this.gl.activeTexture(this.gl.TEXTURE0);

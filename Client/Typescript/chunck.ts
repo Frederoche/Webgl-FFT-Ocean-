@@ -6,6 +6,7 @@ namespace Ocean
         vertices :any[]; 
         size : number;
         gl: WebGLRenderingContext;
+        clipPlane: any[];
 
         constructor(gl, size)
         {
@@ -14,6 +15,7 @@ namespace Ocean
             this.size = size;
             this.indices = [];
             this.vertices = [];
+            this.clipPlane = [];
 
             super.createProgram('vertexShader', 'fragmentShader', true);
         }
@@ -80,13 +82,22 @@ namespace Ocean
             this.gl.useProgram(null);
         }
 
-        Draw(ext, wireframe, camera, projMatrix, viewMatrix, reflection , displacement, refraction)
+        Draw(ext, wireframe, camera, projMatrix, viewMatrix, reflection , displacement, refraction, invProj, invView, birdviewMatrix)
         {
             this.gl.useProgram(this.program);
 
+                    //camera position, up vector, lookAt
                     this.gl.uniform3f(this.program.cameraPosition, camera.position[0], camera.position[1], camera.position[2]);
+
+                    this.gl.uniform3f(this.program.upVector, camera.up[0], camera.up[1], camera.up[2]);
+                    this.gl.uniform3f(this.program.lookAt, camera.lookAt[0], camera.lookAt[1], camera.lookAt[2]);
+
+                    this.gl.uniformMatrix4fv(this.program.invViewMatrix , false, invView);
+                    this.gl.uniformMatrix4fv(this.program.invProjMatrix , false, invProj);
+
                     this.gl.uniformMatrix4fv(this.program.projectionMatrix , false, projMatrix);
                     this.gl.uniformMatrix4fv(this.program.viewMatrixMatrix , false, viewMatrix);
+                     this.gl.uniformMatrix4fv(this.program.birdviewMatrix , false, birdviewMatrix);
 
                     this.gl.bindTexture(this.gl.TEXTURE_2D, displacement.displacementTexture);
                     this.gl.activeTexture(this.gl.TEXTURE0 + 1);
@@ -97,7 +108,7 @@ namespace Ocean
                     this.gl.uniform1i(this.program.reflection, 2);
 
                     this.gl.bindTexture(this.gl.TEXTURE_2D, refraction.texture);
-                    this.gl.activeTexture(this.gl.TEXTURE0+3);
+                    this.gl.activeTexture(this.gl.TEXTURE0 + 3);
                     this.gl.uniform1i(this.program.refraction, 3);
 
                     //LOAD OCEAN GRID

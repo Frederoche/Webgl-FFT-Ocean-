@@ -43,12 +43,19 @@ var Ocean;
             }
             else {
                 this.program.texture = this.gl.getUniformLocation(this.program, "texture");
+                this.program.clipPlane = this.gl.getUniformLocation(this.program, "clipplane");
+                this.program.isclipped = this.gl.getUniformLocation(this.program, "isclipped");
             }
             this.program.cameraPosition = this.gl.getUniformLocation(this.program, "cameraPosition");
             this.program.texcoord = this.gl.getAttribLocation(this.program, "texCoord");
             this.program.vertexPositionAttribute = this.gl.getAttribLocation(this.program, "position");
             this.program.projectionMatrix = this.gl.getUniformLocation(this.program, "projMatrix");
             this.program.viewMatrixMatrix = this.gl.getUniformLocation(this.program, "viewMatrix");
+            this.program.invViewMatrix = this.gl.getUniformLocation(this.program, "invViewMatrix");
+            this.program.invProjMatrix = this.gl.getUniformLocation(this.program, "invProjMatrix");
+            this.program.birdviewMatrix = this.gl.getUniformLocation(this.program, "birdviewMatrix");
+            this.program.upVector = this.gl.getUniformLocation(this.program, "upVector");
+            this.program.lookAt = this.gl.getUniformLocation(this.program, "lookAt");
             this.gl.useProgram(null);
         };
         return Buffer;

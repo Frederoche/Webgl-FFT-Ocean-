@@ -23,9 +23,9 @@ namespace Ocean{
         public create()
         {
             let vertices = [ -1, -1, -1, 0.25, 2.0/3.0,
-                             -1, -1, 1,  0.25, 1.0,
-                             1,  -1, 1, 0.5, 2.0/3.0,
-                             1,  -1, -1,  0.5, 1.0,
+                             -1, -1, 1,  0.25,  1.0,
+                             1,  -1, 1,  0.5, 1.0,
+                             1,  -1, -1,  0.5, 2.0/3.0,
                              
                             -1,  1, -1,  0.25, 1.0/3.0,
                             -1,  1,  1,  0.25, 0.0,
@@ -72,10 +72,17 @@ namespace Ocean{
             this.gl.useProgram(null);
         }
 
-        public render(projMatrix, viewMatrix)
+        public render(projMatrix, viewMatrix, isclipped)
         {
             this.gl.useProgram(this.program);
-            
+
+            this.gl.uniform4f(this.program.clipPlane, 0, -1, 0, -5);
+
+            if (isclipped === true)
+                this.gl.uniform1f(this.program.isclipped, 1.0);
+            else
+                this.gl.uniform1f(this.program.isclipped, 0.0);
+           
                 this.gl.uniformMatrix4fv(this.program.projectionMatrix , false, projMatrix);
                 this.gl.uniformMatrix4fv(this.program.viewMatrixMatrix , false, viewMatrix);
 

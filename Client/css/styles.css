@@ -33,6 +33,14 @@ canvas {
     border: 1px solid white
 }
 
+#camera-height{
+    display: block;
+    z-index: 1000;
+    position: absolute;
+    top: 512px;
+    width: 124px;
+}
+
 #hu {
     display: block;
     z-index: 1000;

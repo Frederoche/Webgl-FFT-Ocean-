@@ -17,8 +17,8 @@ namespace Ocean{
             this.size = size;
             this.gl = gl;
             this.length = 1024.0;
-            this.windspeed = 100.0;
-            this.windX = 2.0;
+            this.windspeed = 25.0;
+            this.windX = 2.5    ;
             this.windY = 2.0;
             this.A = 0.0001;
             this.g = 9.81;
@@ -63,9 +63,6 @@ namespace Ocean{
                     plot.imagedata.data[k+3] = 255.0;
 
                     k+=4;
-
-                   
-                    
                 }
             }
             plot.load();
@@ -129,8 +126,8 @@ namespace Ocean{
                 for(var j=0; j < this.size; j++)
                 {  
                     
-                    Kx = 2.0  * Math.PI  * (i - this.size/2.0)/this.length;  
-                    Ky = 2.0  * Math.PI  * (j - this.size/2.0)/this.length ;
+                    Kx = 2.0  * Math.PI  * (i - this.size/2.0)/2048;  
+                    Ky = 2.0  * Math.PI  * (j - this.size/2.0)/2048 ;
 
                     let KK = Math.sqrt(Kx*Kx + Ky*Ky);
 
@@ -143,7 +140,7 @@ namespace Ocean{
 
                     let htilde = Complex.add(h0t, h1t);
 
-                    let imaginarydoth = Complex.mult(new Complex(0, 1), htilde);
+                    let imaginarydoth = Complex.mult(new Complex(0, 1.0), htilde);
 
                     let x = Complex.multScalar(imaginarydoth, Kx/KK);
                     let z = Complex.multScalar(imaginarydoth, Ky/KK);
@@ -186,6 +183,7 @@ namespace Ocean{
 
             if(windkdot == 0.0)
                 return 0.0;
+                
 
             let result = Math.exp(-knormalized * knormalized*0.00001*0.00001)  * parameter.A /(knormalized * knormalized * knormalized * knormalized) * Math.exp(-1.0/(knormalized * knormalized * L * L)) 
             * windkdot * windkdot;

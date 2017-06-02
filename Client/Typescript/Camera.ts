@@ -65,6 +65,11 @@ namespace Ocean
             vec3.add(this.position, [Math.cos(this.angle) * Math.sin(this.pitch), Math.cos(this.pitch), Math.sin(this.angle) * Math.sin(this.pitch)], this.lookAt);
         }
 
+        invertPitch()
+        {
+            this.pitch = -this.pitch;
+        }
+
         log()
         {
             console.log(this.position);

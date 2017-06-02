@@ -1,7 +1,6 @@
-<html>
-
+<!DOCTYPE html>
 <head>
-    <link href="css/styles.css" rel="stylesheet"></link>
+    <link href="css/styles.css" rel="stylesheet"/>
     <script src="Javascript/Complex.js"></script>
     <script src="Javascript/Fourier.js"></script>
     <script src="Javascript/Phillips.js"></script>
@@ -16,49 +15,240 @@
     <script src="Javascript/FrameBuffer.js"></script>
     <script src="gl-matrix.js"></script>
 
-    <script id="skyBoxVertexShader" type="x-shader/x-vertex">
-        precision mediump float; uniform mat4 projMatrix; uniform mat4 viewMatrix; attribute vec2 texCoord; attribute vec3 position; varying vec2 texcoord; varying vec3 wPos; float size = 1000.0; void main(void) { texcoord = texCoord; wPos = position; gl_Position
-        = projMatrix * viewMatrix * vec4(position.x* size, position.y * size ,position.z * size, 1.0); }
+<script id="skyBoxVertexShader" type="x-shader/x-vertex">
+        precision mediump float; 
+        uniform mat4 projMatrix; 
+        uniform mat4 viewMatrix; 
+
+        attribute vec2 texCoord; 
+        attribute vec3 position; 
+
+        varying vec2 texcoord; 
+        varying vec3 wPos; 
+        varying vec4 eyespacePos;
+
+        float size = 2000.0;
+        
+        void main(void) 
+        { 
+            texcoord = texCoord; 
+            wPos = position; 
+
+            eyespacePos = viewMatrix * vec4(position.x* size, position.y * size ,position.z * size, 1.0) ;
+            
+            gl_Position = projMatrix * viewMatrix * vec4(position.x* size, position.y * size ,position.z * size, 1.0); 
+        }
 
     </script>
-    <script id="skyBoxfragmentShader" type="x-shader/x-fragment">
-        precision highp float; varying vec2 texcoord; varying vec3 wPos; uniform sampler2D texture; uniform vec3 cameraPosition; void main(void) { vec4 tex = texture2D(texture, texcoord); gl_FragColor = tex; }
+<script id="skyBoxfragmentShader" type="x-shader/x-fragment">
+        precision highp float;
+
+        varying vec2 texcoord; 
+        varying vec3 wPos; 
+        varying vec4 eyespacePos;
+
+        uniform sampler2D texture; 
+        uniform vec3 cameraPosition;
+        
+        uniform vec4 clipplane;
+        uniform float isclipped;
+
+        vec3 mie(float dist, vec3 sunL){ 
+            return max(exp(-pow(dist, 0.65)) * sunL - 0.4, 0.0); 
+        } 
+        
+        float distance(vec3 vector) 
+        {
+            return sqrt(vector.x*vector.x + vector.y*vector.y + vector.z*vector.z); 
+        } 
+        
+        void main(void) 
+        { 
+            //if(isclipped == 1.0 && dot(eyespacePos,clipplane) < 0.0  )
+            //{ 
+            //    discard; 
+            //} 
+        
+            vec4 tex = texture2D(texture, texcoord);
+            
+           // if(wPos.y < -0.2)
+           //    gl_FragColor = vec4(0.45,0.6,0.76, 1.0);       
+           //else
+                gl_FragColor = tex;
+         }
     </script>
 
-    <script id="vertexShader" type="x-shader/x-vertex">
-        precision mediump float; precision highp sampler2D; uniform mat4 projMatrix; uniform mat4 viewMatrix; uniform sampler2D displacement; attribute vec3 position; attribute vec2 texCoord; attribute vec3 offset; varying vec2 texcoord; varying vec2 mirroredtexCoord;
-        float size = 64.0; varying vec4 wPosition; varying vec4 pos; vec4 chunck(sampler2D sample, vec2 coord, vec3 offset) { vec4 d = texture2D(displacement, coord); return vec4(d.x, d.y , d.z ,1.0); } void main(void) { texcoord = (position.xz + 1.0)
-        * 0.5; if(offset.x == 0.0 && offset.z == 0.0) { mirroredtexCoord.x = texcoord.y / 3.0; mirroredtexCoord.y = texcoord.x / 3.0; } else if(offset.x ==127.0 && offset.z == 127.0) { mirroredtexCoord.x = 0.33 + texcoord.y / 3.0; mirroredtexCoord.y =
-        0.33 + texcoord.x / 3.0; } else if(offset.x == 0.0 && offset.z == 127.0) { mirroredtexCoord.x = 0.33 + texcoord.y/3.0; mirroredtexCoord.y = texcoord.x/3.0; } else if(offset.x == 127.0 && offset.z == 0.0) { mirroredtexCoord.y = 0.33 + texcoord.x/3.0;
-        mirroredtexCoord.x = texcoord.y/3.0; } else if(offset.x == 254.0 && offset.z == 254.0) { mirroredtexCoord.y = 0.66 + texcoord.x/3.0; mirroredtexCoord.x = 0.66 + texcoord.y/3.0; } else if(offset.x == 127.0 && offset.z == 254.0) { mirroredtexCoord.y
-        = 0.33 + texcoord.x/3.0; mirroredtexCoord.x = 0.66 + texcoord.y/3.0; } else if(offset.x == 254.0 && offset.z == 127.0) { mirroredtexCoord.y = 0.66 + texcoord.x/3.0; mirroredtexCoord.x = 0.33 + texcoord.y/3.0; } else if(offset.x == 254.0 && offset.z
-        == 0.0) { mirroredtexCoord.y = 0.66 + texcoord.x/3.0; mirroredtexCoord.x = 0.0 + texcoord.y/3.0; } else if(offset.x == 0.0 && offset.z == 254.0) { mirroredtexCoord.y = 0.0 + texcoord.x/3.0; mirroredtexCoord.x = 0.66 + texcoord.y/3.0; } vec4 d
-        = chunck(displacement, texcoord, offset); float x = (position.x + d.x)* size + offset.x; float z = (position.z + d.z)* size+ offset.z; wPosition = vec4(x,position.y + d.y * size, z, 1.0); pos = (viewMatrix * wPosition); gl_Position = projMatrix*
-        viewMatrix * wPosition; }
+<script id="vertexShader" type="x-shader/x-vertex">
+        precision mediump float; 
+        precision highp sampler2D;
+
+        uniform mat4 projMatrix; 
+        uniform mat4 viewMatrix;
+        uniform mat4 birdviewMatrix;
+
+        uniform vec3 cameraPosition; 
+        uniform vec3 upVector;
+        uniform vec3 lookAt; 
+
+        uniform mat4 invProjMatrix;
+        uniform mat4 invViewMatrix;
+          
+        uniform sampler2D displacement; 
+
+        attribute vec3 position; 
+        attribute vec2 texCoord; 
+        attribute vec3 offset; 
+
+        varying vec2 texcoord; 
+        varying vec4 clipSpace;
+        
+        float size = 64.0; 
+        
+        varying vec4 wPosition; 
+        varying vec4 pos; 
+        varying vec3 camPos;
+        
+        vec4 chunck(sampler2D sample, vec2 coord) 
+        { 
+            vec4 d = texture2D(displacement, coord);
+            return vec4(d.x, d.y , d.z ,1.0);
+        }
+
+         float att(vec3 vector, float dmin, float dmax)
+         {
+            float d = sqrt(vector.x * vector.x + vector.y * vector.y + vector.z * vector.z); 
+
+            if (d > dmax) 
+                return 0.0;
+            else
+                return clamp((1.0 / (dmin - dmax)*(dmin - dmax)) * ((d-dmax) * (d-dmax)), 0.0 , 1.0);
+         }
+
+        void main(void)
+        { 
+            vec4 vertex = vec4(position.x, position.z, 0.0, 1.0); 
+            
+            vec3 cameraSpace = normalize((invProjMatrix * vertex).xyz);
+            vec3 worldSpace  = (invViewMatrix * vec4(cameraSpace, 0.0)).xyz;
+
+            float t = (-cameraPosition.y)/worldSpace.y ;
+
+            vec3 u =  (cameraPosition + t * worldSpace);
+
+            texcoord = (u.xz + 1.0) * 0.5; 
+        
+            vec4 d = chunck(displacement, texcoord.xy); 
+        
+            camPos = cameraPosition;
+
+            u.y = d.y;
+            u.x = (u.x + d.x);
+            u.z = (u.z + d.z);
+
+            clipSpace  = projMatrix * viewMatrix * vec4(u ,1.0); 
+
+            pos = (viewMatrix * vec4(u , 1.0)); 
+
+            wPosition = vec4(u.x, u.y, u.z, 1.0);
+            
+            if (t > 0.0) 
+            {
+                gl_Position = projMatrix * viewMatrix * vec4(u ,1.0);
+            }
+
+           //gl_Position = clipSpace;
+         }
     </script>
-    <script id="fragmentShader" type="x-shader/x-fragment">
-        precision highp float; precision highp sampler2D; varying vec2 texcoord; uniform sampler2D displacement; uniform sampler2D reflectionSampler; uniform sampler2D refractionSampler; uniform vec3 cameraPosition; varying vec4 wPosition; varying vec4 normalWorld;
-        varying vec4 pos; varying vec2 mirroredtexCoord; vec3 calcNormals(sampler2D text, vec2 texcoords) { float texel = 1.0 / 64.0; float texelSize = 1.0 / 32.0; vec3 center = texture2D(text, texcoords).xyz; vec3 left = vec3(-texelSize, 0.0,0.0) + texture2D(text,texcoords
-        + vec2(-texel, 0.0)).xyz - center; vec3 right = vec3(texelSize, 0.0, 0.0) + texture2D(text, texcoords + vec2(texel, 0.0)).xyz - center; vec3 bottom = vec3(0.0, 0.0, texelSize) + texture2D(text, texcoords+ vec2(0.0, texel)).xyz - center; vec3 top
-        = vec3(0.0, 0.0, -texelSize) + texture2D(text, texcoords + vec2(0.0, -texel)).xyz - center; vec3 topRight = cross(right, top); vec3 topLeft = cross(top, left); vec3 bottomLeft = cross(left, bottom); vec3 bottomRight = cross(bottom, right); return
-        normalize(topRight + topLeft + bottomLeft + bottomRight); } void main(void) { vec3 LIGHTCOLOR = vec3(0.8, 0.8, 0.8); vec3 SEA_WATER_COLOR = vec3(0.8,0.9,0.6); vec4 LIGHT_POSITION = vec4(2000.0,300.0,-1000.0, 1.0); vec3 lightDir = normalize(LIGHT_POSITION.xyz
-        - pos.xyz); vec3 view = normalize(cameraPosition - wPosition.xyz); vec3 normal = calcNormals(displacement, texcoord); vec2 modtexcoord = mirroredtexCoord; modtexcoord.x = modtexcoord.x ; modtexcoord.y = modtexcoord.y; vec3 refr = refract(view,
-        normal, 1.33); vec3 refl = reflect(view, normal); vec4 refractionTex = texture2D(reflectionSampler, modtexcoord - 0.05 * refr.xy); vec4 reflectionTex = texture2D(refractionSampler, modtexcoord - 0.05 * refl.xy); float diffuseFactor = clamp(dot(normal,lightDir.xyz),
-        0.0, 1.0); float fresnel = 0.02 + 0.98*pow(1.0 - dot(normal, view), 5.0); vec3 refraction = vec3(0.13,0.2,0.22) + diffuseFactor * SEA_WATER_COLOR*0.25; vec3 color = ((refractionTex.xyz + refraction)*(1.0-fresnel)+ (fresnel)* (reflectionTex.xyz+
-        LIGHTCOLOR*0.75)); float specular = pow(max(0.0, dot(reflect(lightDir, normal), -view)),1000.0); color+= specular * LIGHTCOLOR * 100.0; gl_FragColor = vec4(1.0 - exp(-color.xyz*color.xyz), 1.0); }
-    </script>
+<script id="fragmentShader" type="x-shader/x-fragment">
+
+        precision highp float;
+        precision highp sampler2D;
+
+        varying vec2 texcoord; 
+
+        uniform sampler2D displacement; 
+        uniform sampler2D reflectionSampler;
+        uniform sampler2D refractionSampler; 
+
+        
+        varying vec3 camPos;
+        varying vec4 wPosition;
+        varying vec4 normalWorld; 
+        varying vec4 pos; 
+        
+        varying vec4 eyespacePos;
+        varying vec4 clipSpace; 
+
+        vec3 calcNormals(sampler2D text, vec2 texcoords) { 
+
+            float texel = 1.0 / 64.0;
+            float texelSize = 1.0 / 32.0; 
+
+            vec3 center = texture2D(text, texcoords).xyz; 
+
+            vec3 left   = vec3(-texelSize, 0.0,0.0)  + texture2D(text,texcoords + vec2(-texel, 0.0)).xyz - center; 
+            vec3 right  = vec3(texelSize, 0.0, 0.0)  + texture2D(text, texcoords + vec2(texel, 0.0)).xyz - center; 
+            vec3 bottom = vec3(0.0, 0.0, texelSize)  + texture2D(text, texcoords+ vec2(0.0, texel)).xyz - center;
+            vec3 top    = vec3(0.0, 0.0, -texelSize) + texture2D(text, texcoords + vec2(0.0, -texel)).xyz - center; 
+
+            vec3 topRight    = cross(right, top); 
+            vec3 topLeft     = cross(top, left); 
+            vec3 bottomLeft  = cross(left, bottom); 
+            vec3 bottomRight = cross(bottom, right); 
+
+            return normalize(topRight + topLeft + bottomLeft + bottomRight); 
+        } 
+        
+        void main(void) { 
+            vec3 LIGHTCOLOR         = vec3(0.8, 0.8, 0.8); 
+            vec3 SEA_WATER_COLOR    = vec3(0.2,0.4,0.8); 
+            vec4 LIGHT_POSITION     = vec4(1000.0,2.0,-1000.0, 1.0); 
+
+            vec3 lightDir = normalize(LIGHT_POSITION.xyz - pos.xyz); 
+            vec3 view     = normalize(camPos - wPosition.xyz); 
+            vec3 normal   = calcNormals(displacement, texcoord); 
+
+            vec2 reflectionCoord;
+            vec2 refractionCoord; 
+    
+            reflectionCoord.x = 0.5*(clipSpace.w + clipSpace.x)/clipSpace.w;
+            reflectionCoord.y = 0.5*(clipSpace.w - clipSpace.y)/clipSpace.w;
+    
+            refractionCoord.x = 0.5*(clipSpace.w - clipSpace.x)/clipSpace.w;
+            refractionCoord.y = 0.5*(clipSpace.w + clipSpace.y)/clipSpace.w;
+            
+            vec4 refractionTex = texture2D(reflectionSampler, refractionCoord - 0.1*normal.xz); 
+            vec4 reflectionTex = texture2D(refractionSampler, reflectionCoord + 0.1*normal.xz); 
+        
+            float diffuseFactor = clamp(dot(normal,lightDir.xyz), 0.0, 1.0); 
+            
+            if (dot(view, normal) < 0.0) {
+                    normal = reflect(normal, view); 
+            }
+
+            float fresnel = 0.02 + 0.98*pow(1.0 - dot(normal, view), 3.0);
+
+            vec3 refraction = vec3(0.013,0.02,0.022) + diffuseFactor * SEA_WATER_COLOR + refract(lightDir,normal,1.33)*LIGHTCOLOR* SEA_WATER_COLOR; 
+
+            vec3 color = ((refractionTex.xyz + refraction)*(fresnel)+ (1.0 -fresnel)* (reflectionTex.xyz*0.45 +LIGHTCOLOR*0.15)); 
+
+            float specular = pow(max(0.0, dot(reflect(lightDir, normal),-view)),100.0); 
+
+            color+= specular * LIGHTCOLOR * 10.0;
+     
+            gl_FragColor = vec4(1.0 - exp(-0.95*color), 1.0); 
+    }
+     </script>
 </head>
 
 <body>
     <div id="panel">
-        <img id="spectrum" width="128" height="128"></img>
-        <img id="hu" width="128" height="128"></img>
-        <img id="spacial" width="128" height="128"></img>
-
+        <img id="spectrum" width="128" height="128"/>
+        <img id="hu"       width="128" height="128"/>
+        <img id="spacial"  width="128" height="128"/>
+        <input type = "text" width="20" id="camera-height"/>
         <input id="choppiness" type="range" min="0" max="10" value="9" />
     </div>
     <canvas id="canvas"></canvas>
-    <img src="images/skybox.jpg" id="skybox" width="1024" height="1024" style="display:none;"></img>
-</body>
-
-</html>
+<img src="images/Skybox2.jpg" id="skybox" width="1024" height="1024" style="display: none;"/>
+</body></html>

@@ -41,6 +41,9 @@ var Ocean;
             this.pitch -= 0.05;
             vec3.add(this.position, [Math.cos(this.angle) * Math.sin(this.pitch), Math.cos(this.pitch), Math.sin(this.angle) * Math.sin(this.pitch)], this.lookAt);
         };
+        Camera.prototype.invertPitch = function () {
+            this.pitch = -this.pitch;
+        };
         Camera.prototype.log = function () {
             console.log(this.position);
             console.log(this.lookAt);

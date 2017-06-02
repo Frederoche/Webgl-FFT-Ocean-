@@ -4,39 +4,44 @@ var Ocean;
         function FrameBuffer(width, height, gl) {
             this.width = width;
             this.height = height;
+            this.distance = 0;
             this.gl = gl;
             this.texture = gl.createTexture();
             this.framBuffer = this.gl.createFramebuffer();
+            this.renderbuffer = this.gl.createRenderbuffer();
         }
         FrameBuffer.prototype.InitEmptyTexture = function () {
             this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
-            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.NEAREST);
+            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
             this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.LINEAR);
-            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
-            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
-            this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.width, this.height, 0, this.gl.RGBA, this.gl.UNSIGNED_BYTE, null);
+            this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, 512, 512, 0, this.gl.RGBA, this.gl.UNSIGNED_BYTE, null);
         };
         FrameBuffer.prototype.CreateFrameBuffer = function () {
+            this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.framBuffer);
             this.InitEmptyTexture();
-            this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.framBuffer);
-            this.gl.framebufferTexture2D(this.gl.FRAMEBUFFER, this.gl.COLOR_ATTACHMENT0, this.gl.TEXTURE_2D, this.texture, 0);
-            this.gl.bindTexture(this.gl.TEXTURE_2D, null);
-            this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
-        };
-        FrameBuffer.prototype.BeginRenderframeBuffer = function (viewMatrix, mirrorMatrix) {
-            mat4.multiply(viewMatrix, mirrorMatrix, viewMatrix);
-            this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-            this.gl.viewport(0, 0, this.width, this.height);
             this.gl.bindRenderbuffer(this.gl.RENDERBUFFER, this.renderbuffer);
-            this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.framBuffer);
-            this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
-        };
-        FrameBuffer.prototype.EndRenderBuffer = function (viewMatrix, mirrorMatrix, width, height) {
-            mat4.multiply(viewMatrix, mirrorMatrix, viewMatrix);
+            this.gl.renderbufferStorage(this.gl.RENDERBUFFER, this.gl.DEPTH_COMPONENT16, 512, 512);
+            this.gl.framebufferTexture2D(this.gl.FRAMEBUFFER, this.gl.COLOR_ATTACHMENT0, this.gl.TEXTURE_2D, this.texture, 0);
+            this.gl.framebufferRenderbuffer(this.gl.FRAMEBUFFER, this.gl.DEPTH_ATTACHMENT, this.gl.RENDERBUFFER, this.renderbuffer);
             this.gl.bindTexture(this.gl.TEXTURE_2D, null);
             this.gl.bindRenderbuffer(this.gl.RENDERBUFFER, null);
             this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
-            this.gl.viewport(0, 0, width, height);
+        };
+        FrameBuffer.prototype.BeginRenderframeBuffer = function (camera, waterHeight) {
+            this.distance = 2 * camera.position[1];
+            camera.position[1] -= this.distance;
+            camera.invertPitch();
+            this.gl.viewport(0, 0, 512, 512);
+            this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.framBuffer);
+            this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
+            this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+        };
+        FrameBuffer.prototype.EndRenderBuffer = function (camera) {
+            this.gl.bindTexture(this.gl.TEXTURE_2D, null);
+            this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
+            camera.position[1] += this.distance;
+            camera.invertPitch();
+            this.gl.viewport(0, 0, this.width, this.height);
         };
         return FrameBuffer;
     }());

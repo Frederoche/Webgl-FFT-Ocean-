@@ -6,6 +6,9 @@ var Ocean;
             this.canvas = canvas;
             this.projMatrix = mat4.create();
             this.viewMatrix = mat4.create();
+            this.birdViewMatrix = mat4.create();
+            this.invProj = mat4.create();
+            this.invView = mat4.create();
             this.chunck = new Ocean.chunck(gl, 128);
             this.interval = 1.0;
             this.ext = this.gl.getExtension("ANGLE_instanced_arrays");
@@ -20,7 +23,8 @@ var Ocean;
             this.skybox = new Ocean.SkyBox(gl, 100);
             this.reflection = new Ocean.FrameBuffer(window.innerWidth, window.innerHeight, this.gl);
             this.refraction = new Ocean.FrameBuffer(window.innerWidth, window.innerHeight, this.gl);
-            this.camera = new Ocean.Camera(vec3.create([26, 132, 326]), vec3.create([26.417, 131.32, 325.4]), vec3.create([0, 1, 0]));
+            this.camera = new Ocean.Camera(vec3.create([26, 2, 326]), vec3.create([26.417, 2, 325.4]), vec3.create([0, 1, 0]));
+            this.birdCamera = new Ocean.Camera(vec3.create([26, 140, 400.0]), vec3.create([26.417, 131.32, 325.4]), vec3.create([0, 1, 0]));
             this.displacementTexture = new Ocean.Texture(this.gl, 64);
         }
         Engine.prototype.load = function () {
@@ -50,31 +54,24 @@ var Ocean;
             var _this = this;
             //FRAMEBUFFER
             this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-            this.reflection.BeginRenderframeBuffer(this.viewMatrix, [1, 0, 0, 0,
-                0, -1, 0, 0,
-                0, 0, 1, 0,
-                0, 0, 0, 1]);
-            this.skybox.render(this.projMatrix, this.viewMatrix);
-            this.reflection.EndRenderBuffer(this.viewMatrix, [1, 0, 0, 0,
-                0, -1, 0, 0,
-                0, 0, 1, 0,
-                0, 0, 0, 1], this.canvas.width, this.canvas.height);
-            this.refraction.BeginRenderframeBuffer(this.viewMatrix, [1, 0, 0, 0,
-                0, 2, 0, 0,
-                0, 0, 1, 0,
-                0, 0, 0, 1]);
-            this.skybox.render(this.projMatrix, this.viewMatrix);
-            this.refraction.EndRenderBuffer(this.viewMatrix, [1, 0, 0, 0,
-                0, 1 / 2.0, 0, 0,
-                0, 0, 1, 0,
-                0, 0, 0, 1], this.canvas.width, this.canvas.height);
+            var text = document.getElementById("camera-height");
+            text.value = this.camera.position[1];
+            this.reflection.BeginRenderframeBuffer(this.camera, 0.0);
+            this.skybox.render(this.projMatrix, this.viewMatrix, true);
+            this.reflection.EndRenderBuffer(this.camera);
+            this.refraction.BeginRenderframeBuffer(this.camera, 0.0);
+            this.skybox.render(this.projMatrix, this.viewMatrix, true);
+            this.refraction.EndRenderBuffer(this.camera);
             //REST OF SCENE
             this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-            this.skybox.render(this.projMatrix, this.viewMatrix);
+            this.skybox.render(this.projMatrix, this.viewMatrix, false);
             this.generateWaves();
-            mat4.perspective(45.0, 1.0, 0.1, 4000.0, this.projMatrix);
+            mat4.perspective(60.0, 1.2, 0.01, 4000.0, this.projMatrix);
             mat4.lookAt(this.camera.position, this.camera.lookAt, this.camera.up, this.viewMatrix);
-            this.chunck.Draw(this.ext, this.wireframe, this.camera, this.projMatrix, this.viewMatrix, this.reflection, this.displacementTexture, this.refraction);
+            mat4.lookAt(this.birdCamera.position, this.birdCamera.lookAt, this.birdCamera.up, this.birdViewMatrix);
+            mat4.inverse(this.viewMatrix, this.invView);
+            mat4.inverse(this.projMatrix, this.invProj);
+            this.chunck.Draw(this.ext, this.wireframe, this.camera, this.projMatrix, this.viewMatrix, this.reflection, this.displacementTexture, this.refraction, this.invProj, this.invView, this.birdViewMatrix);
             this.frameNumber = requestAnimationFrame(function () {
                 _this.render();
             });
@@ -110,31 +107,26 @@ window.onload = function () {
             case 39:
                 {
                     engine.camera.lookRight();
-                    engine.camera.log();
                     break;
                 }
             case 37:
                 {
                     engine.camera.lookLeft();
-                    engine.camera.log();
                     break;
                 }
             case 38:
                 {
                     engine.camera.moveForward();
-                    engine.camera.log();
                     break;
                 }
             case 40:
                 {
                     engine.camera.moveBackward();
-                    engine.camera.log();
                     break;
                 }
             case 90:
                 {
                     engine.camera.moveDown();
-                    engine.camera.log();
                     break;
                 }
             case 65:

@@ -1,19 +1,26 @@
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var Ocean;
 (function (Ocean) {
     var chunck = (function (_super) {
         __extends(chunck, _super);
         function chunck(gl, size) {
-            _super.call(this, gl);
-            this.gl = gl;
-            this.size = size;
-            this.indices = [];
-            this.vertices = [];
-            _super.prototype.createProgram.call(this, 'vertexShader', 'fragmentShader', true);
+            var _this = _super.call(this, gl) || this;
+            _this.gl = gl;
+            _this.size = size;
+            _this.indices = [];
+            _this.vertices = [];
+            _this.clipPlane = [];
+            _super.prototype.createProgram.call(_this, 'vertexShader', 'fragmentShader', true);
+            return _this;
         }
         chunck.prototype.update = function () {
             _super.prototype.update.call(this, this.vertices);
@@ -59,11 +66,17 @@ var Ocean;
             this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(offset), this.gl.STATIC_DRAW);
             this.gl.useProgram(null);
         };
-        chunck.prototype.Draw = function (ext, wireframe, camera, projMatrix, viewMatrix, reflection, displacement, refraction) {
+        chunck.prototype.Draw = function (ext, wireframe, camera, projMatrix, viewMatrix, reflection, displacement, refraction, invProj, invView, birdviewMatrix) {
             this.gl.useProgram(this.program);
+            //camera position, up vector, lookAt
             this.gl.uniform3f(this.program.cameraPosition, camera.position[0], camera.position[1], camera.position[2]);
+            this.gl.uniform3f(this.program.upVector, camera.up[0], camera.up[1], camera.up[2]);
+            this.gl.uniform3f(this.program.lookAt, camera.lookAt[0], camera.lookAt[1], camera.lookAt[2]);
+            this.gl.uniformMatrix4fv(this.program.invViewMatrix, false, invView);
+            this.gl.uniformMatrix4fv(this.program.invProjMatrix, false, invProj);
             this.gl.uniformMatrix4fv(this.program.projectionMatrix, false, projMatrix);
             this.gl.uniformMatrix4fv(this.program.viewMatrixMatrix, false, viewMatrix);
+            this.gl.uniformMatrix4fv(this.program.birdviewMatrix, false, birdviewMatrix);
             this.gl.bindTexture(this.gl.TEXTURE_2D, displacement.displacementTexture);
             this.gl.activeTexture(this.gl.TEXTURE0 + 1);
             this.gl.uniform1i(this.program.reflection, 1);
