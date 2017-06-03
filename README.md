@@ -10,4 +10,5 @@ Small program written in typescript. It displays a wave constructed by the inver
 <a href="https://mighty-crag-23655.herokuapp.com/">Demo (worldspace grid)</a>
 
 <a href="https://www.youtube.com/watch?v=BcdXhBMRrNk&index=4&list=PLX4dsjt6kyOgM_dQxCG6KUZ62ainphz5t">Video (worldspace grid)</a>
+<br/>
 <a href="https://www.youtube.com/watch?v=TWgvpq930VU&list=PLX4dsjt6kyOgM_dQxCG6KUZ62ainphz5t&index=1">Video (projected grid)</a>
