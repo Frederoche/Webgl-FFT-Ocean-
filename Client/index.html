@@ -113,17 +113,7 @@
             vec4 d = texture2D(displacement, coord);
             return vec4(d.x, d.y , d.z ,1.0);
         }
-
-         float att(vec3 vector, float dmin, float dmax)
-         {
-            float d = sqrt(vector.x * vector.x + vector.y * vector.y + vector.z * vector.z); 
-
-            if (d > dmax) 
-                return 0.0;
-            else
-                return clamp((1.0 / (dmin - dmax)*(dmin - dmax)) * ((d-dmax) * (d-dmax)), 0.0 , 1.0);
-         }
-
+        
         void main(void)
         { 
             vec4 vertex = vec4(position.x, position.z, 0.0, 1.0); 
