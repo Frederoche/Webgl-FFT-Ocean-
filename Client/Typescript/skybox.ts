@@ -15,8 +15,10 @@ namespace Ocean{
             this.gl = gl;
             this.size = size;
             this.indices = [];
-            
-            this.texture = new Texture(this.gl, 256).createTexture(this.texture);
+            this.texture = this.gl.createTexture();
+            new Texture(this.gl, 512).createTexture((texture)=>{
+                this.texture = texture;
+            });
 
             super.createProgram("skyBoxVertexShader", "skyBoxfragmentShader", false);
         }

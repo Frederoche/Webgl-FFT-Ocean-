@@ -17,7 +17,10 @@ var Ocean;
             _this.gl = gl;
             _this.size = size;
             _this.indices = [];
-            _this.texture = new Ocean.Texture(_this.gl, 256).createTexture(_this.texture);
+            _this.texture = _this.gl.createTexture();
+            new Ocean.Texture(_this.gl, 512).createTexture(function (texture) {
+                _this.texture = texture;
+            });
             _super.prototype.createProgram.call(_this, "skyBoxVertexShader", "skyBoxfragmentShader", false);
             return _this;
         }

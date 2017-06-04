@@ -61,10 +61,7 @@ namespace Ocean
             
             this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
             this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.LINEAR);
-            
-            
-            
-
+        
             this.gl.texImage2D(this.gl.TEXTURE_2D, 0 , this.gl.RGBA, this.size, this.size, 0, this.gl.RGBA, this.gl.FLOAT, new Float32Array(dataArray));
             this.gl.bindTexture(this.gl.TEXTURE_2D, null);
             return this;
@@ -72,10 +69,10 @@ namespace Ocean
 
     
 
-        public createTexture(texture)
+        public createTexture(callback)
         {
-             let image = <HTMLImageElement>document.getElementById("skybox");
-             texture = this.gl.createTexture();
+             let image = new Image(512, 512);
+             let texture = this.gl.createTexture();
 
              image.addEventListener("load", ()=>{
 
@@ -92,15 +89,12 @@ namespace Ocean
                 
                 this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA,  this.gl.RGBA, this.gl.UNSIGNED_BYTE,<HTMLImageElement> image);
 
-                
                 this.gl.bindTexture(this.gl.TEXTURE_2D, null);
-               
+                callback(texture);
 
              }, false);
 
-             image.src = "../images/Skybox2.jpg";
-             return texture;
-            
+             image.src = "images/Skybox2.jpg";
         }
     }
 

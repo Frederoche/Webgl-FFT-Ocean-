@@ -39,10 +39,10 @@ var Ocean;
             this.gl.bindTexture(this.gl.TEXTURE_2D, null);
             return this;
         };
-        Texture.prototype.createTexture = function (texture) {
+        Texture.prototype.createTexture = function (callback) {
             var _this = this;
-            var image = document.getElementById("skybox");
-            texture = this.gl.createTexture();
+            var image = new Image(512, 512);
+            var texture = this.gl.createTexture();
             image.addEventListener("load", function () {
                 var ext = _this.gl.getExtension("EXT_texture_filter_anisotropic");
                 _this.gl.bindTexture(_this.gl.TEXTURE_2D, texture);
@@ -53,9 +53,9 @@ var Ocean;
                 _this.gl.texParameterf(_this.gl.TEXTURE_2D, ext.TEXTURE_MAX_ANISOTROPY_EXT, 16);
                 _this.gl.texImage2D(_this.gl.TEXTURE_2D, 0, _this.gl.RGBA, _this.gl.RGBA, _this.gl.UNSIGNED_BYTE, image);
                 _this.gl.bindTexture(_this.gl.TEXTURE_2D, null);
+                callback(texture);
             }, false);
-            image.src = "../images/Skybox2.jpg";
-            return texture;
+            image.src = "images/Skybox2.jpg";
         };
         return Texture;
     }());
