@@ -72,27 +72,35 @@ namespace Ocean
 
     
 
-        public createTexture()
+        public createTexture(texture)
         {
-            let ext  = this.gl.getExtension("EXT_texture_filter_anisotropic");
+             let image = <HTMLImageElement>document.getElementById("skybox");
+             texture = this.gl.createTexture();
 
-            let texture = this.gl.createTexture();
-            this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
-            
-            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.NEAREST);
-            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.NEAREST);
-            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
-            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
-            
-            this.gl.texParameterf(this.gl.TEXTURE_2D, ext.TEXTURE_MAX_ANISOTROPY_EXT, 16);
-            
-            let image = document.getElementById("skybox");
+             image.addEventListener("load", ()=>{
 
-            this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA,  this.gl.RGBA, this.gl.UNSIGNED_BYTE,<HTMLImageElement> image);
+                let ext  = this.gl.getExtension("EXT_texture_filter_anisotropic");
 
+                this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
+                
+                this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.NEAREST);
+                this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.NEAREST);
+                this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
+                this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
+                
+                this.gl.texParameterf(this.gl.TEXTURE_2D, ext.TEXTURE_MAX_ANISOTROPY_EXT, 16);
+                
+                this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA,  this.gl.RGBA, this.gl.UNSIGNED_BYTE,<HTMLImageElement> image);
+
+                
+                this.gl.bindTexture(this.gl.TEXTURE_2D, null);
+               
+
+             }, false);
+
+             image.src = "../images/Skybox2.jpg";
+             return texture;
             
-            this.gl.bindTexture(this.gl.TEXTURE_2D, null);
-            return texture;
         }
     }
 

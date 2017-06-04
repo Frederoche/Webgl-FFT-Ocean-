@@ -8,14 +8,15 @@ namespace Ocean{
         indexBuffer: WebGLBuffer;
         texture : WebGLTexture;
 
-        constructor(gl, size)
+        constructor(gl, size)   
         {
             super(gl);
 
             this.gl = gl;
             this.size = size;
             this.indices = [];
-            this.texture = new Texture(this.gl, 256).createTexture();
+            
+            this.texture = new Texture(this.gl, 256).createTexture(this.texture);
 
             super.createProgram("skyBoxVertexShader", "skyBoxfragmentShader", false);
         }
