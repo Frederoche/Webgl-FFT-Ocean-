@@ -76,7 +76,7 @@ namespace Ocean
 
              image.addEventListener("load", ()=>{
 
-                let ext  = this.gl.getExtension("EXT_texture_filter_anisotropic");
+                
 
                 this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
                 
@@ -85,7 +85,7 @@ namespace Ocean
                 this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
                 this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
                 
-                this.gl.texParameterf(this.gl.TEXTURE_2D, ext.TEXTURE_MAX_ANISOTROPY_EXT, 16);
+                
                 
                 this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA,  this.gl.RGBA, this.gl.UNSIGNED_BYTE,<HTMLImageElement> image);
 
