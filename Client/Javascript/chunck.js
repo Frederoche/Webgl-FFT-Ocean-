@@ -1,26 +1,20 @@
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 var Ocean;
 (function (Ocean) {
     var chunck = (function (_super) {
         __extends(chunck, _super);
         function chunck(gl, size) {
-            var _this = _super.call(this, gl) || this;
-            _this.gl = gl;
-            _this.size = size;
-            _this.indices = [];
-            _this.vertices = [];
-            _this.clipPlane = [];
-            _super.prototype.createProgram.call(_this, 'vertexShader', 'fragmentShader', true);
-            return _this;
+            _super.call(this, gl);
+            this.gl = gl;
+            this.size = size;
+            this.indices = [];
+            this.vertices = [];
+            this.clipPlane = [];
+            _super.prototype.createProgram.call(this, 'vertexShader', 'fragmentShader', true);
         }
         chunck.prototype.update = function () {
             _super.prototype.update.call(this, this.vertices);
@@ -90,14 +84,8 @@ var Ocean;
             this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertexBuffer);
             this.gl.enableVertexAttribArray(this.program.vertexPositionAttribute);
             this.gl.vertexAttribPointer(this.program.vertexPositionAttribute, 3, this.gl.FLOAT, false, 12, 0);
-            //INSTANCED DRAWING
-            this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.offsetBuffer);
-            this.gl.enableVertexAttribArray(this.program.offsetAttribute);
-            this.gl.vertexAttribPointer(this.program.offsetAttribute, 3, this.gl.FLOAT, false, 0, 0);
-            ext.vertexAttribDivisorANGLE(this.program.offsetAttribute, 1);
             this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-            ext.drawElementsInstancedANGLE(wireframe, this.indices.length, this.gl.UNSIGNED_SHORT, 0, 9);
-            ext.vertexAttribDivisorANGLE(this.program.offsetAttribute, 0);
+            this.gl.drawElements(wireframe, this.indices.length, this.gl.UNSIGNED_SHORT, 0);
             this.gl.bindBuffer(this.gl.ARRAY_BUFFER, null);
             this.gl.disable(this.gl.BLEND);
             this.gl.useProgram(null);

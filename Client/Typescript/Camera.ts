@@ -19,7 +19,7 @@ namespace Ocean
 
             this.angle = -1.035;
             this.pitch = 2.17;
-            this.speed = 10.0;
+            this.speed = 1.0;
         }
 
         moveForward() {
@@ -45,13 +45,13 @@ namespace Ocean
 
         lookRight() {
             
-            this.angle += 0.25;
+            this.angle += 0.05;
             vec3.add(this.position, [Math.cos(this.angle) * Math.sin(this.pitch), Math.cos(this.pitch), Math.sin(this.angle) * Math.sin(this.pitch)], this.lookAt);
         }
 
         lookLeft()
         {
-            this.angle -= 0.25;
+            this.angle -= 0.05;
             vec3.add(this.position, [ Math.cos(this.angle) * Math.sin(this.pitch), Math.cos(this.pitch), Math.sin(this.angle) * Math.sin(this.pitch)], this.lookAt);
         }
 

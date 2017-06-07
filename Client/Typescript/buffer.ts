@@ -60,7 +60,6 @@ namespace Ocean
             if(isOcean)
             {
                 this.program.time            = this.gl.getUniformLocation(this.program,  "time");
-                this.program.offsetAttribute = this.gl.getAttribLocation(this.program,   "offset");
 
                 this.program.spectrum        = this.gl.getUniformLocation(this.program, "displacement");
                 this.program.reflection      = this.gl.getUniformLocation(this.program, "reflectionSampler");
@@ -84,9 +83,6 @@ namespace Ocean
             this.program.invViewMatrix           = this.gl.getUniformLocation(this.program, "invViewMatrix");
             this.program.invProjMatrix           = this.gl.getUniformLocation(this.program, "invProjMatrix");
             this.program.birdviewMatrix          = this.gl.getUniformLocation(this.program, "birdviewMatrix");
-
-            this.program.upVector                = this.gl.getUniformLocation(this.program, "upVector");
-            this.program.lookAt                  = this.gl.getUniformLocation(this.program, "lookAt");
 
             this.gl.useProgram(null);   
         }

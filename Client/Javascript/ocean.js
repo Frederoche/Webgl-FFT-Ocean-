@@ -9,7 +9,7 @@ var Ocean;
             this.birdViewMatrix = mat4.create();
             this.invProj = mat4.create();
             this.invView = mat4.create();
-            this.chunck = new Ocean.chunck(gl, 128);
+            this.chunck = new Ocean.chunck(gl, 250);
             this.interval = 1.0;
             this.ext = this.gl.getExtension("ANGLE_instanced_arrays");
             this.floatExtension = this.gl.getExtension("OES_texture_float");
@@ -39,19 +39,18 @@ var Ocean;
         };
         Engine.prototype.generateWaves = function () {
             var _this = this;
-            cancelAnimationFrame(this.frameNumber);
-            this.interval += 1 / 8.0;
-            var spectrum = this.Phillips.update(this.interval, this.h0, this.h1);
-            var h = this.fft.Inverse2D(spectrum.h);
-            var x = this.fft.Inverse2D(spectrum.x);
-            var z = this.fft.Inverse2D(spectrum.z);
-            this.displacementTexture.texture(x, h, z);
-            this.frameNumber = requestAnimationFrame(function () {
+            this.frameNumber = window.requestAnimationFrame(function () {
+                _this.interval += 1.0 / 6.0;
+                var spectrum = _this.Phillips.update(_this.interval, _this.h0, _this.h1);
+                var h = _this.fft.Inverse2D(spectrum.h);
+                var x = _this.fft.Inverse2D(spectrum.x);
+                var z = _this.fft.Inverse2D(spectrum.z);
+                _this.displacementTexture.texture(x, h, z);
                 _this.render();
             });
         };
         Engine.prototype.render = function () {
-            var _this = this;
+            //
             //FRAMEBUFFER
             this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
             var text = document.getElementById("camera-height");
@@ -72,9 +71,6 @@ var Ocean;
             mat4.inverse(this.viewMatrix, this.invView);
             mat4.inverse(this.projMatrix, this.invProj);
             this.chunck.Draw(this.ext, this.wireframe, this.camera, this.projMatrix, this.viewMatrix, this.reflection, this.displacementTexture, this.refraction, this.invProj, this.invView, this.birdViewMatrix);
-            this.frameNumber = requestAnimationFrame(function () {
-                _this.render();
-            });
         };
         return Engine;
     }());

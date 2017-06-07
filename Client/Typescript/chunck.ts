@@ -116,15 +116,9 @@ namespace Ocean
                     this.gl.enableVertexAttribArray(this.program.vertexPositionAttribute);
                     this.gl.vertexAttribPointer(this.program.vertexPositionAttribute, 3, this.gl.FLOAT, false, 12, 0);
                     
-                    //INSTANCED DRAWING
-                    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.offsetBuffer);
-                    this.gl.enableVertexAttribArray(this.program.offsetAttribute);
-                    this.gl.vertexAttribPointer(this.program.offsetAttribute, 3, this.gl.FLOAT, false, 0, 0);
-                    ext.vertexAttribDivisorANGLE(this.program.offsetAttribute, 1);
-
                     this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-                    ext.drawElementsInstancedANGLE(wireframe, this.indices.length, this.gl.UNSIGNED_SHORT, 0, 9);
-                    ext.vertexAttribDivisorANGLE(this.program.offsetAttribute, 0);
+                    this.gl.drawElements(wireframe, this.indices.length, this.gl.UNSIGNED_SHORT,0);
+                    
 
                     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, null);
                     this.gl.disable(this.gl.BLEND);

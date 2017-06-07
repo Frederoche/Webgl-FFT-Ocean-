@@ -52,7 +52,7 @@ namespace Ocean
             this.invProj =  mat4.create();
             this.invView =  mat4.create();
 
-            this.chunck = new chunck(gl, 128);
+            this.chunck = new chunck(gl, 250);
             
             this.interval = 1.0;
             this.ext            = this.gl.getExtension("ANGLE_instanced_arrays");
@@ -93,29 +93,31 @@ namespace Ocean
             this.refraction.CreateFrameBuffer();
         }
 
-        private generateWaves(){
-           cancelAnimationFrame(this.frameNumber);
+        private generateWaves() {
+
+           
                 
-                this.interval +=  1/8.0;
-                
+            this.frameNumber = window.requestAnimationFrame(() => {
+                this.interval += 1.0/6.0;
+
                 let spectrum = this.Phillips.update(this.interval, this.h0, this.h1);
-                
+
                 let h = this.fft.Inverse2D(spectrum.h);
                 let x = this.fft.Inverse2D(spectrum.x);
                 let z = this.fft.Inverse2D(spectrum.z);
-                
-                
-                this.displacementTexture.texture(x,h,z);
-                
-                this.frameNumber = requestAnimationFrame(()=> {
+
+
+                this.displacementTexture.texture(x, h, z);
+
                     this.render();
 
-                    
+
                 });
         }
 
         public render()
-          {     
+        {     
+            //
               //FRAMEBUFFER
               this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
               
@@ -138,7 +140,7 @@ namespace Ocean
               //REST OF SCENE
               this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
               this.skybox.render(this.projMatrix, this.viewMatrix, false); 
-
+              
               this.generateWaves();
 
               
@@ -151,12 +153,12 @@ namespace Ocean
               mat4.inverse(this.viewMatrix, this.invView);
               mat4.inverse(this.projMatrix, this.invProj);
 
+              
+
               this.chunck.Draw(this.ext, this.wireframe, this.camera, this.projMatrix, this.viewMatrix, this.reflection,this.displacementTexture ,this.refraction, this.invProj, this.invView, this.birdViewMatrix);
               
               
-            this.frameNumber = requestAnimationFrame(()=> {
-                this.render();
-            });
+            
         }
     }
 }
