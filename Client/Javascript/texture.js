@@ -33,8 +33,9 @@ var Ocean;
         };
         Texture.prototype.createTexturefromData = function (dataArray) {
             this.gl.bindTexture(this.gl.TEXTURE_2D, this.displacementTexture);
-            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
-            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.LINEAR);
+            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR_MIPMAP_NEAREST);
+            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.LINEAR_MIPMAP_LINEAR);
+            this.gl.generateMipmap(this.gl.TEXTURE_2D);
             this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.size, this.size, 0, this.gl.RGBA, this.gl.FLOAT, new Float32Array(dataArray));
             this.gl.bindTexture(this.gl.TEXTURE_2D, null);
             return this;

@@ -34,7 +34,7 @@
             texcoord = texCoord; 
             wPos = position; 
 
-            eyespacePos = viewMatrix * vec4(position.x* size, position.y * size ,position.z * size, 1.0) ;
+            eyespacePos = viewMatrix * vec4(position.x*size, position.y*size  ,position.z*size , 1.0) ;
             
             gl_Position = projMatrix * viewMatrix * vec4(position.x* size, position.y * size ,position.z * size, 1.0); 
         }
@@ -122,18 +122,14 @@
             vec4 d  = texture2D(displacement, texcoord);
         
             camPos = cameraPosition;
-            
-           
-            
+                    
             u.y = d.y;
             u.x = (u.x + d.x);
             u.z = (u.z + d.z);
     
-            
-    
             clipSpace  = projMatrix * viewMatrix * vec4(u ,1.0); 
 
-            pos = (viewMatrix * vec4(u , 1.0)); 
+            pos = (viewMatrix * vec4(worldSpace , 1.0)); 
 
             wPosition = vec4(u.x, u.y, u.z, 1.0);
             
@@ -155,7 +151,8 @@
         uniform sampler2D displacement; 
         uniform sampler2D reflectionSampler;
         uniform sampler2D refractionSampler; 
-
+        
+        
         
         varying vec3 camPos;
         varying vec4 wPosition;
@@ -181,7 +178,7 @@
             vec3 topLeft     = cross(top, left); 
             vec3 bottomLeft  = cross(left, bottom); 
             vec3 bottomRight = cross(bottom, right); 
-
+    
             return normalize(topRight + topLeft + bottomLeft + bottomRight); 
         } 
         
@@ -189,7 +186,7 @@
             vec3 LIGHTCOLOR         = vec3(0.9, 0.6, 0.6); 
             vec3 SEA_WATER_COLOR    = vec3(0.0,0.3,0.35); 
             vec3 DEEP_SEA_COLOR     = vec3(0.2, 0.24, 0.3);
-            vec4 LIGHT_POSITION     = vec4(1000.0,100.0,-1000.0, 1.0); 
+            vec4 LIGHT_POSITION     = vec4(1000.0,100.0,-1900.0, 1.0); 
 
             vec3 lightDir = normalize(LIGHT_POSITION.xyz - pos.xyz); 
             vec3 view     = normalize(camPos - wPosition.xyz); 
@@ -214,7 +211,7 @@
         
             float diffuseFactor = clamp(dot(normal,lightDir.xyz), 0.0, 1.0) + 0.6; 
             
-            float fresnel = 0.02 + 0.98*pow(1.0 - dot(normal, view), 5.0);
+            float fresnel = 0.02 + 0.98*pow(1.0 - dot(normal, view), 3.0);
 
             vec3 refraction = DEEP_SEA_COLOR*0.2 + diffuseFactor + reflectionTex.xyz; 
             vec3 relfection = reflectionTex.xyz * SEA_WATER_COLOR + LIGHTCOLOR*0.25;
