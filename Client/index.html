@@ -74,7 +74,7 @@
            // if(wPos.y < -0.2)
            //    gl_FragColor = vec4(0.45,0.6,0.76, 1.0);       
            //else
-                gl_FragColor = tex;
+                gl_FragColor = vec4(tex.xyz*tex.xyz, 1.0);
          }
     </script>
 
@@ -106,18 +106,10 @@
         varying vec3 camPos;
     
         
-        
-        vec4 chunck(sampler2D sample, vec2 coord) 
-        { 
-            vec4 d  = texture2D(displacement, coord);
-            
-            return vec4(d.x, d.y , d.z ,1.0);
-        }
-        
         void main(void)
         { 
             vec4 vertex = vec4(position.x, position.z, 0.0, 1.0); 
-            
+    
             vec3 cameraSpace = normalize((invProjMatrix * vertex).xyz);
             vec3 worldSpace  = (invViewMatrix * vec4(cameraSpace, 0.0)).xyz;
 
@@ -126,14 +118,18 @@
             vec3 u =  (cameraPosition + t * worldSpace);
 
             texcoord = (u.xz + 1.0) * 0.5; 
-        
-            vec4 d = chunck(displacement, texcoord.xy); 
+    
+            vec4 d  = texture2D(displacement, texcoord);
         
             camPos = cameraPosition;
+            
+           
             
             u.y = d.y;
             u.x = (u.x + d.x);
             u.z = (u.z + d.z);
+    
+            
     
             clipSpace  = projMatrix * viewMatrix * vec4(u ,1.0); 
 
@@ -172,7 +168,7 @@
         vec3 calcNormals(sampler2D text, vec2 texcoords) { 
 
             float texel = 1.0 / 128.0;
-            float texelSize = 1.0 / 64.0; 
+            float texelSize = 1.0 / 32.0; 
 
             vec3 center = texture2D(text, texcoords).xyz; 
 
@@ -190,15 +186,20 @@
         } 
         
         void main(void) { 
-            vec3 LIGHTCOLOR         = vec3(0.8, 0.8, 0.8); 
-            vec3 SEA_WATER_COLOR    = vec3(0.2,0.4,0.8); 
-            vec4 LIGHT_POSITION     = vec4(1000.0,2.0,-1000.0, 1.0); 
+            vec3 LIGHTCOLOR         = vec3(0.9, 0.6, 0.6); 
+            vec3 SEA_WATER_COLOR    = vec3(0.0,0.3,0.35); 
+            vec3 DEEP_SEA_COLOR     = vec3(0.2, 0.24, 0.3);
+            vec4 LIGHT_POSITION     = vec4(1000.0,100.0,-1000.0, 1.0); 
 
             vec3 lightDir = normalize(LIGHT_POSITION.xyz - pos.xyz); 
             vec3 view     = normalize(camPos - wPosition.xyz); 
             vec3 normal   = calcNormals(displacement, texcoord); 
     
-   
+            if (dot(view, normal) < 0.0) {
+                normal = reflect(normal, view);
+            }        
+    
+
             vec2 reflectionCoord;
             vec2 refractionCoord; 
     
@@ -208,24 +209,24 @@
             refractionCoord.x = 0.5*(clipSpace.w - clipSpace.x)/clipSpace.w;
             refractionCoord.y = 0.5*(clipSpace.w + clipSpace.y)/clipSpace.w;
             
-            vec4 refractionTex = texture2D(reflectionSampler, refractionCoord - 0.1*normal.xz); 
-            vec4 reflectionTex = texture2D(refractionSampler, reflectionCoord + 0.1*normal.xz); 
+            vec4 refractionTex = texture2D(refractionSampler, refractionCoord - 0.1*normal.xz); 
+            vec4 reflectionTex = texture2D(reflectionSampler, reflectionCoord + 0.1*normal.xz); 
         
-            float diffuseFactor = clamp(dot(normal,lightDir.xyz), 0.0, 1.0); 
+            float diffuseFactor = clamp(dot(normal,lightDir.xyz), 0.0, 1.0) + 0.6; 
             
-            if (dot(view, normal) < 0.0) {
-                    normal = reflect(normal, view); 
-            }
+            float fresnel = 0.02 + 0.98*pow(1.0 - dot(normal, view), 5.0);
 
-            float fresnel = 0.02 + 0.98*pow(1.0 - dot(normal, view), 3.0);
+            vec3 refraction = DEEP_SEA_COLOR*0.2 + diffuseFactor + reflectionTex.xyz; 
+            vec3 relfection = reflectionTex.xyz * SEA_WATER_COLOR + LIGHTCOLOR*0.25;
 
-            vec3 refraction = vec3(0.013,0.02,0.022) + diffuseFactor * SEA_WATER_COLOR + refract(lightDir,normal,1.33)*LIGHTCOLOR* SEA_WATER_COLOR; 
+            vec3 color = ((refraction)*(fresnel)+ (1.0 - fresnel)* (relfection)) ; 
 
-            vec3 color = ((refractionTex.xyz + refraction)*(fresnel)+ (1.0 -fresnel)* (reflectionTex.xyz*0.45 +LIGHTCOLOR*0.15)); 
+            float specular = pow(max(0.0, dot(reflect(lightDir, normal),-view)),1000.0); 
+            
+            if(dot(lightDir, normal) < 0.0)
+                specular = 0.0;
 
-            float specular = pow(max(0.0, dot(reflect(lightDir, normal),-view)),100.0); 
-
-            color+= specular * LIGHTCOLOR * 10.0;
+            color+= specular * LIGHTCOLOR*10.0;
      
             gl_FragColor = vec4(1.0 - exp(-0.95*color), 1.0); 
     }
