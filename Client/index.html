@@ -183,9 +183,9 @@
         } 
         
         void main(void) { 
-            vec3 LIGHTCOLOR         = vec3(0.9, 0.6, 0.6); 
-            vec3 SEA_WATER_COLOR    = vec3(0.0,0.3,0.35); 
-            vec3 DEEP_SEA_COLOR     = vec3(0.2, 0.24, 0.3);
+            vec3 LIGHTCOLOR         = vec3(0.9, 0.9, 0.9); 
+            vec3 SEA_WATER_COLOR    = vec3(0.2,0.4,0.8); 
+            vec3 DEEP_SEA_COLOR     = vec3(0.013,0.02,0.022);
             vec4 LIGHT_POSITION     = vec4(1000.0,100.0,-1900.0, 1.0); 
 
             vec3 lightDir = normalize(LIGHT_POSITION.xyz - pos.xyz); 
@@ -209,23 +209,23 @@
             vec4 refractionTex = texture2D(refractionSampler, refractionCoord - 0.1*normal.xz); 
             vec4 reflectionTex = texture2D(reflectionSampler, reflectionCoord + 0.1*normal.xz); 
         
-            float diffuseFactor = clamp(dot(normal,lightDir.xyz), 0.0, 1.0) + 0.6; 
+            float diffuseFactor = clamp(dot(normal,lightDir.xyz), 0.0, 1.0); 
             
-            float fresnel = 0.02 + 0.98*pow(1.0 - dot(normal, view), 3.0);
+            float fresnel = 0.02 + 0.98*pow(1.0 - dot(normal, view), 5.0);
 
-            vec3 refraction = DEEP_SEA_COLOR*0.2 + diffuseFactor + reflectionTex.xyz; 
-            vec3 relfection = reflectionTex.xyz * SEA_WATER_COLOR + LIGHTCOLOR*0.25;
+            vec3 refraction = DEEP_SEA_COLOR    + SEA_WATER_COLOR * diffuseFactor + refractionTex.xyz + refract(lightDir,normal,1.33)*LIGHTCOLOR* SEA_WATER_COLOR; 
+            vec3 relfection = reflectionTex.xyz*0.45;
 
-            vec3 color = ((refraction)*(fresnel)+ (1.0 - fresnel)* (relfection)) ; 
+            vec3 color = ((refraction)*(fresnel)+ (1.0 - fresnel)* (relfection*0.45 +LIGHTCOLOR*0.15)) ; 
 
-            float specular = pow(max(0.0, dot(reflect(lightDir, normal),-view)),1000.0); 
+            float specular = pow(max(0.0, dot(reflect(lightDir, normal),-view)),100.0)*10.0; 
             
             if(dot(lightDir, normal) < 0.0)
                 specular = 0.0;
 
-            color+= specular * LIGHTCOLOR*10.0;
+            color+= specular * LIGHTCOLOR;
      
-            gl_FragColor = vec4(1.0 - exp(-0.95*color), 1.0); 
+            gl_FragColor = vec4(1.0 - exp(-1.5*color), 1.0); 
     }
      </script>
 </head>
