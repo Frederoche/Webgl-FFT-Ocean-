@@ -27,20 +27,24 @@ var Ocean;
             this.gl.bindRenderbuffer(this.gl.RENDERBUFFER, null);
             this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
         };
-        FrameBuffer.prototype.BeginRenderframeBuffer = function (camera, waterHeight) {
-            this.distance = 2 * camera.position[1];
-            camera.position[1] -= this.distance;
-            camera.invertPitch();
+        FrameBuffer.prototype.BeginRenderframeBuffer = function (camera, isreflection) {
+            if (isreflection) {
+                this.distance = 2 * camera.position[1];
+                camera.position[1] -= this.distance;
+                camera.invertPitch();
+            }
             this.gl.viewport(0, 0, 512, 512);
             this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.framBuffer);
             this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
             this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
         };
-        FrameBuffer.prototype.EndRenderBuffer = function (camera) {
+        FrameBuffer.prototype.EndRenderBuffer = function (camera, isreflection) {
             this.gl.bindTexture(this.gl.TEXTURE_2D, null);
             this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
-            camera.position[1] += this.distance;
-            camera.invertPitch();
+            if (isreflection) {
+                camera.position[1] += this.distance;
+                camera.invertPitch();
+            }
             this.gl.viewport(0, 0, this.width, this.height);
         };
         return FrameBuffer;

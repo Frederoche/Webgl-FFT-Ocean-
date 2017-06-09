@@ -75,13 +75,18 @@ namespace Ocean{
             this.gl.useProgram(null);
         }
 
-        public render(projMatrix, viewMatrix, isclipped)
+        public render(projMatrix, viewMatrix, isclipped, isReflection)
         {
+            this.gl.disable(this.gl.DEPTH_TEST);
+            //this.gl.depthMask(false);
             this.gl.useProgram(this.program);
+           
+            if (isReflection)
+                this.gl.uniform4f(this.program.clipPlane, 0,  1, 0, 1.0);
+            else
+                this.gl.uniform4f(this.program.clipPlane, 0, -1, 0, 1.0);
 
-            this.gl.uniform4f(this.program.clipPlane, 0, -1, 0, -5);
-
-            if (isclipped === true)
+            if (isclipped)
                 this.gl.uniform1f(this.program.isclipped, 1.0);
             else
                 this.gl.uniform1f(this.program.isclipped, 0.0);
@@ -92,7 +97,6 @@ namespace Ocean{
                 this.gl.activeTexture(this.gl.TEXTURE0);
                 this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
                 
-                 
                 this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertexBuffer);
                 this.gl.enableVertexAttribArray(this.program.vertexPositionAttribute);
                 
@@ -101,8 +105,11 @@ namespace Ocean{
 
                 this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
                 this.gl.drawElements(this.gl.TRIANGLES, this.indices.length, this.gl.UNSIGNED_BYTE, 0);
+                
+                this.gl.useProgram(null);
 
-            this.gl.useProgram(null);
+               // this.gl.depthMask(true)
+               this.gl.enable(this.gl.DEPTH_TEST);
         }
 
     }

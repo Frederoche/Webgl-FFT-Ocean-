@@ -82,7 +82,6 @@ namespace Ocean
         public load(){
             this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
             this.gl.clearColor(1.0, 1.0, 1.0, 1.0);
-
             this.gl.clearDepth(1);
             this.gl.enable(this.gl.DEPTH_TEST);
 
@@ -117,34 +116,33 @@ namespace Ocean
 
         public render()
         {     
-            //
-              //FRAMEBUFFER
               this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
               
               let text = <HTMLInputElement>document.getElementById("camera-height"); 
               
               text.value = this.camera.position[1];
 
-              this.reflection.BeginRenderframeBuffer(this.camera, 0.0);
 
-              this.skybox.render(this.projMatrix, this.viewMatrix, true);  
+              //REFLECTION FRAMEBUFFER RENDERING
+              this.reflection.BeginRenderframeBuffer(this.camera, true);
+                this.skybox.render(this.projMatrix, this.viewMatrix, true, true);  
+              this.reflection.EndRenderBuffer(this.camera, true); 
 
-              this.reflection.EndRenderBuffer(this.camera);
-            
-              this.refraction.BeginRenderframeBuffer(this.camera, 0.0);
 
-              this.skybox.render(this.projMatrix, this.viewMatrix, true);  
+              //REFRACTION FRAMEBUFFER RENDERING
+              this.refraction.BeginRenderframeBuffer(this.camera, false);
+                this.skybox.render(this.projMatrix, this.viewMatrix, true, false); 
+              this.refraction.EndRenderBuffer(this.camera, false);
 
-              this.refraction.EndRenderBuffer(this.camera);
 
               //REST OF SCENE
               this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-              this.skybox.render(this.projMatrix, this.viewMatrix, false); 
-              
+              this.skybox.render(this.projMatrix, this.viewMatrix, false, false); 
+
               this.generateWaves();
 
               
-              mat4.perspective(60.0, 1.2, 0.01, 4000.0, this.projMatrix);
+              mat4.perspective(60.0, 1.1, window.innerWidth/window.innerHeight, 4000.0, this.projMatrix);
 
               mat4.lookAt(this.camera.position, this.camera.lookAt, this.camera.up, this.viewMatrix);
               mat4.lookAt(this.birdCamera.position, this.birdCamera.lookAt, this.birdCamera.up,this.birdViewMatrix);
@@ -153,12 +151,8 @@ namespace Ocean
               mat4.inverse(this.viewMatrix, this.invView);
               mat4.inverse(this.projMatrix, this.invProj);
 
-              
-
               this.chunck.Draw(this.ext, this.wireframe, this.camera, this.projMatrix, this.viewMatrix, this.reflection,this.displacementTexture ,this.refraction, this.invProj, this.invView, this.birdViewMatrix);
               
-              
-            
         }
     }
 }

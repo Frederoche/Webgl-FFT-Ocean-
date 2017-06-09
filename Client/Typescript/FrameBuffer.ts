@@ -37,6 +37,7 @@ namespace Ocean
 
         public CreateFrameBuffer()
         {
+
             this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.framBuffer);
             this.InitEmptyTexture();
 
@@ -51,12 +52,15 @@ namespace Ocean
             this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
         }
 
-        public BeginRenderframeBuffer(camera:Camera, waterHeight:number)
+        public BeginRenderframeBuffer(camera:Camera, isreflection)
         {
-            this.distance = 2 * camera.position[1];
+            
+            if (isreflection) {
+                this.distance = 2 * camera.position[1];
 
-            camera.position[1] -= this.distance;
-            camera.invertPitch();
+                camera.position[1] -= this.distance;
+                camera.invertPitch();
+            }
 
             this.gl.viewport(0, 0, 512, 512);
             this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.framBuffer);
@@ -64,13 +68,14 @@ namespace Ocean
             this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
         }
 
-        public EndRenderBuffer(camera)
-        {
-            this.gl.bindTexture(this.gl.TEXTURE_2D,null);
+        public EndRenderBuffer(camera, isreflection) {
+            this.gl.bindTexture(this.gl.TEXTURE_2D, null);
             this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
-            
-            camera.position[1] += this.distance;
-            camera.invertPitch();
+
+            if (isreflection){
+                camera.position[1] += this.distance;
+                camera.invertPitch();
+            }
 
             this.gl.viewport(0, 0, this.width, this.height);
             

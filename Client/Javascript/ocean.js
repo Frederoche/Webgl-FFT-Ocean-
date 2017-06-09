@@ -50,22 +50,22 @@ var Ocean;
             });
         };
         Engine.prototype.render = function () {
-            //
-            //FRAMEBUFFER
             this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
             var text = document.getElementById("camera-height");
             text.value = this.camera.position[1];
-            this.reflection.BeginRenderframeBuffer(this.camera, 0.0);
-            this.skybox.render(this.projMatrix, this.viewMatrix, true);
-            this.reflection.EndRenderBuffer(this.camera);
-            this.refraction.BeginRenderframeBuffer(this.camera, 0.0);
-            this.skybox.render(this.projMatrix, this.viewMatrix, true);
-            this.refraction.EndRenderBuffer(this.camera);
+            //REFLECTION FRAMEBUFFER RENDERING
+            this.reflection.BeginRenderframeBuffer(this.camera, true);
+            this.skybox.render(this.projMatrix, this.viewMatrix, true, true);
+            this.reflection.EndRenderBuffer(this.camera, true);
+            //REFRACTION FRAMEBUFFER RENDERING
+            this.refraction.BeginRenderframeBuffer(this.camera, false);
+            this.skybox.render(this.projMatrix, this.viewMatrix, true, false);
+            this.refraction.EndRenderBuffer(this.camera, false);
             //REST OF SCENE
             this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-            this.skybox.render(this.projMatrix, this.viewMatrix, false);
+            this.skybox.render(this.projMatrix, this.viewMatrix, false, false);
             this.generateWaves();
-            mat4.perspective(60.0, 1.2, 0.01, 4000.0, this.projMatrix);
+            mat4.perspective(60.0, 1.1, window.innerWidth / window.innerHeight, 4000.0, this.projMatrix);
             mat4.lookAt(this.camera.position, this.camera.lookAt, this.camera.up, this.viewMatrix);
             mat4.lookAt(this.birdCamera.position, this.birdCamera.lookAt, this.birdCamera.up, this.birdViewMatrix);
             mat4.inverse(this.viewMatrix, this.invView);

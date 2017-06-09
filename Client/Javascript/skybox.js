@@ -57,10 +57,15 @@ var Ocean;
             this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint8Array(this.indices), this.gl.STATIC_DRAW);
             this.gl.useProgram(null);
         };
-        SkyBox.prototype.render = function (projMatrix, viewMatrix, isclipped) {
+        SkyBox.prototype.render = function (projMatrix, viewMatrix, isclipped, isReflection) {
+            this.gl.disable(this.gl.DEPTH_TEST);
+            //this.gl.depthMask(false);
             this.gl.useProgram(this.program);
-            this.gl.uniform4f(this.program.clipPlane, 0, -1, 0, -5);
-            if (isclipped === true)
+            if (isReflection)
+                this.gl.uniform4f(this.program.clipPlane, 0, 1, 0, 1.0);
+            else
+                this.gl.uniform4f(this.program.clipPlane, 0, -1, 0, 1.0);
+            if (isclipped)
                 this.gl.uniform1f(this.program.isclipped, 1.0);
             else
                 this.gl.uniform1f(this.program.isclipped, 0.0);
@@ -75,6 +80,8 @@ var Ocean;
             this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
             this.gl.drawElements(this.gl.TRIANGLES, this.indices.length, this.gl.UNSIGNED_BYTE, 0);
             this.gl.useProgram(null);
+            // this.gl.depthMask(true)
+            this.gl.enable(this.gl.DEPTH_TEST);
         };
         return SkyBox;
     }(Ocean.Buffer));
