@@ -45,6 +45,7 @@ var Ocean;
             var image = new Image(512, 512);
             var texture = this.gl.createTexture();
             image.addEventListener("load", function () {
+                debugger;
                 _this.gl.bindTexture(_this.gl.TEXTURE_2D, texture);
                 _this.gl.texParameteri(_this.gl.TEXTURE_2D, _this.gl.TEXTURE_MIN_FILTER, _this.gl.LINEAR);
                 _this.gl.texParameteri(_this.gl.TEXTURE_2D, _this.gl.TEXTURE_MAG_FILTER, _this.gl.LINEAR);
@@ -54,7 +55,7 @@ var Ocean;
                 _this.gl.bindTexture(_this.gl.TEXTURE_2D, null);
                 callback(texture);
             }, false);
-            image.src = "images/Skybox2.jpg";
+            image.src = "http://localhost:8000/images/skybox.jpg";
         };
         return Texture;
     }());

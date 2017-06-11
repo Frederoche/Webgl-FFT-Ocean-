@@ -64,17 +64,17 @@
         
         void main(void) 
         { 
-           // if(isclipped == 1.0 && dot(eyespacePos,clipplane) > 0.0  )
-           // { 
-           //     discard; 
-           // } 
+            if(isclipped == 1.0 && dot(eyespacePos,clipplane) > 0.0  )
+            { 
+                discard; 
+            } 
         
             vec4 tex = texture2D(texture, texcoord);
             
             if(wPos.y < -0.2)
                gl_FragColor = vec4(0.11,0.18,0.23, 1.0);       
            else
-                gl_FragColor = vec4(tex.xyz*tex.xyz, 1.0);
+                gl_FragColor = vec4(1.0, 1.0,1.0, 1.0);
          }
     </script>
 
@@ -104,7 +104,11 @@
         varying vec4 wPosition; 
         varying vec4 pos; 
         varying vec3 camPos;
-    
+        
+
+        
+
+        
         
         void main(void)
         { 
@@ -120,10 +124,10 @@
             texcoord = (u.xz + 1.0) * 0.5; 
     
             vec4 d  = texture2D(displacement, texcoord);
-        
+            
             camPos = cameraPosition;
                     
-            u.y = d.y;
+            u.y = d.y ;
             u.x = (u.x + d.x);
             u.z = (u.z + d.z);
     
@@ -177,14 +181,16 @@
     
             return normalize(topRight + topLeft + bottomLeft + bottomRight); 
         } 
+
+        
         
         void main(void) { 
-            vec3 LIGHTCOLOR         = vec3(0.9, 0.9, 0.9); 
+            vec3 LIGHTCOLOR         = vec3(0.5, 0.5, 0.5); 
             vec3 SEA_WATER_COLOR    = vec3(0.8,0.9,0.6); 
             vec3 DEEP_SEA_COLOR     = vec3(0.11,0.18,0.4);
-            vec4 LIGHT_POSITION     = vec4(1000.0,100.0,-1900.0, 1.0); 
+            vec4 LIGHT_POSITION     = vec4(1000.0,3.0,-1900.0, 1.0); 
 
-            vec3 lightDir = normalize(LIGHT_POSITION.xyz - pos.xyz); 
+            vec3 lightDir = normalize(LIGHT_POSITION.xyz); 
             vec3 view     = normalize(camPos - wPosition.xyz); 
                 
             
@@ -197,8 +203,9 @@
             refractionCoord.x = 0.5*(clipSpace.w + clipSpace.x)/clipSpace.w;
             refractionCoord.y = 0.5*(clipSpace.w + clipSpace.y)/clipSpace.w;
     
-            vec3 normal   = calcNormals(displacement, texcoord);
+            vec3 normal    = calcNormals(displacement, texcoord);
             
+
             if (dot(view, normal) < 0.0) {
                 normal = reflect(normal, view);
             }     
@@ -214,26 +221,29 @@
             vec3 reflection = reflectionTex.xyz;
 
             vec3 color = (refraction)*(fresnel)+ LIGHTCOLOR*(1.0- fresnel) *(DEEP_SEA_COLOR*0.5 + reflectionTex.xyz*0.0005);
-            color += SEA_WATER_COLOR * (wPosition.y + 0.1)*2.0* camPos.z/(camPos.z -pos.z);
+            color += SEA_WATER_COLOR * (wPosition.y*1.1/camPos.y + 0.1);
 
-            float specular = pow(max(0.0, dot(reflect(lightDir, normal),-view)),100.0) * 10.0; 
+        
             
-            if(dot(lightDir, normal) < 0.0)
-                specular = 0.0;
-
-            color+= specular * LIGHTCOLOR;
+            float specular = pow(max(0.0, dot(reflect(lightDir, normal),-view)),600.0) * 10.0; 
+            
+            
+            if(diffuseFactor>0.0)
+                color+= specular * LIGHTCOLOR;
      
-            gl_FragColor = vec4(1.0 -exp(-0.95*color), 1.0); 
+            gl_FragColor = vec4(1.0 - exp(-0.95*color), 1.0); 
     }
      </script>
 </head>
 
 <body>
     <div id="panel">
-        <img id="spectrum" width="128" height="128"/>
-        <img id="hu"       width="128" height="128"/>
-        <img id="spacial"  width="128" height="128"/>
-        <input type = "text" width="20" id="camera-height"/>
+        <img id="spectrum"      width="128" height="128"/>
+        <img id="hu"            width="128" height="128"/>
+        <img id="spacial"       width="128" height="128"/>
+        <input type = "text"    width="20" id="camera-height"/>
+        <label id="cheight-lbl">camera height</label>
+        <label id="choppiness-lbl">choppiness</label>
         <input id="choppiness" type="range" min="0" max="10" value="9" />
     </div>
     <canvas id="canvas"></canvas>

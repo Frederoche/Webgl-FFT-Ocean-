@@ -4,6 +4,8 @@ body {
     height: 100%;
     margin: 0;
     overflow: hidden;
+    font-family: Verdana;
+    color:white;
 }
 
 canvas {
@@ -18,7 +20,7 @@ canvas {
 }
 
 #choppiness {
-    top: 420px;
+    top: 460px;
     width: 128px;
     height: 1px;
     z-index: 1000;
@@ -56,4 +58,20 @@ canvas {
     width: 130px;
     display: block;
     height: 100vh;
+}
+
+#choppiness-lbl{
+   top: 437px;
+    width: 128px;
+    height: 1px;
+    z-index: 1000;
+    position: absolute; 
+}
+
+#cheight-lbl{
+    top: 490px;
+    width: 128px;
+    height: 1px;
+    z-index: 1000;
+    position: absolute;
 }

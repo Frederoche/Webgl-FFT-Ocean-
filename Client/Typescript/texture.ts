@@ -70,11 +70,12 @@ namespace Ocean
 
         public createTexture(callback)
         {
-             let image = new Image(512, 512);
+            d
+             let image = new Image(512,512);
              let texture = this.gl.createTexture();
 
              image.addEventListener("load", ()=>{
-
+                
                 this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
                 
                 this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
@@ -89,7 +90,7 @@ namespace Ocean
 
              }, false);
 
-             image.src = "images/Skybox2.jpg";
+             image.src = "http://localhost:8000/images/skybox.jpg";
         }
     }
 
