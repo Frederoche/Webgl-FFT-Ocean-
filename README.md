@@ -19,6 +19,7 @@ Small program written in typescript. It displays a wave constructed by the inver
 Further work: 
  - The sun is missing, should be aaded in the skybox shader
  - Better and more realistic scattering should be implemented
+ - better UX
  
  
 
