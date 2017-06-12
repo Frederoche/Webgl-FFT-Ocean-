@@ -5,15 +5,21 @@ The grid used is a projected grid from screenspace to worldspace.
 The static, dynamic Phillips spectrum and the inverse FFT of it is displayed on the left panel.
 
 To run the program:
-- use nodejs app.js.
+- Use nodejs app.js.
 
 
 Commands:
   - W: toggle wireframe
-  - left, right, up down arrow: directions, displacement
+  - Left, right, up down arrow: directions, displacement
   - a,z: pitch,
 
 Small program written in typescript. It displays a wave constructed by the inverse FFT of the Phillips spectrum.
+
+Further work: 
+ - The sun is missing, should be aaded in the skybox shader
+ - Better and more realistic scattering should be implemented
+ 
+ 
 
 <img src="https://github.com/Frederoche/Webgl-FFT-Ocean-/raw/master/waves1.PNG" width="600" style="max-width:100%;">
 <img src="https://github.com/Frederoche/Webgl-FFT-Ocean-/raw/master/Capture.PNG" width="600" style="max-width:100%;">
