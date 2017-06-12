@@ -53,8 +53,8 @@
         uniform vec4 clipplane;
         uniform float isclipped;
 
-        vec3 mie(float dist, vec3 sunL){ 
-            return max(exp(-pow(dist, 0.65)) * sunL - 0.4, 0.0); 
+        vec3 mie(float dist, vec3 lightColor){ 
+            return max(exp(-pow(dist, 0.45)) * lightColor - 0.1, 0.0); 
         } 
         
         float distance(vec3 vector) 
@@ -64,18 +64,36 @@
         
         void main(void) 
         { 
+		vec4 LIGHT_POSITION = vec4(1000.0,3.0,-1900.0, 1.0); 
+
+		float lightDistance = distance(LIGHT_POSITION.xyz);
+	
+		float clampedDistance= clamp(lightDistance, 0.0, 1.0);
+		float sun = clamp(1.0 - smoothstep(0.01, 0.1, clampedDistance), 0.0, 1.0);
+	
+		float h = wPos .y + 0.01;
+		h = (0.5 * mix(clampedDistance, 1.0, h)) / h;
+    
+    		vec3 gradient= mie(lightDistance, vec3(0.5));
+		
+		vec3 color = h * vec3(0.32, 0.6, 1.0);
+    
+    		color = max(color, 0.0);
+    
+		color = max(mix(pow(color, 1.0 - color), color / (2.0 * color + 0.5 - color), clamp(LIGHT_POSITION.y* 2.0, 0.0, 1.0)),0.0) + sun + gradient;
+
             if(isclipped == 1.0 && dot(eyespacePos,clipplane) > 0.0  )
             { 
                 discard; 
             } 
         
-            vec4 tex = texture2D(texture, texcoord);
+            if(wPos.y < -0.01)
+               		gl_FragColor = vec4(0.11,0.18,0.23, 1.0);       
+           	else
+                	gl_FragColor = vec4(color, 1.0);
             
-            if(wPos.y < -0.2)
-               gl_FragColor = vec4(0.11,0.18,0.23, 1.0);       
-           else
-                gl_FragColor = tex;
-         }
+            	
+	}
     </script>
 
 <script id="vertexShader" type="x-shader/x-vertex">
@@ -105,11 +123,6 @@
         varying vec4 pos; 
         varying vec3 camPos;
         
-
-        
-
-        
-        
         void main(void)
         { 
             vec4 vertex = vec4(position.x, position.z, 0.0, 1.0); 
@@ -126,16 +139,20 @@
             vec4 d  = texture2D(displacement, texcoord);
             
             camPos = cameraPosition;
-                    
+              
+	   		
+      
             u.y = d.y ;
             u.x = (u.x + d.x);
             u.z = (u.z + d.z);
-    
+    		
+
+	     wPosition = vec4(u.x, u.y, u.z, 1.0);
             clipSpace  = projMatrix * viewMatrix * vec4(u , 1.0); 
 
             pos = (viewMatrix * vec4(worldSpace , 1.0)); 
 
-            wPosition = vec4(u.x, u.y, u.z, 1.0);
+            
             
             if (t > 0.0) 
             {
@@ -186,8 +203,8 @@
         
         void main(void) { 
             vec3 LIGHTCOLOR         = vec3(0.5, 0.5, 0.5); 
-            vec3 SEA_WATER_COLOR    = vec3(0.8,0.9,0.6); 
-            vec3 DEEP_SEA_COLOR     = vec3(0.11,0.18,0.4);
+            vec3 SEA_WATER_COLOR    = vec3(0.1,0.19,0.22); 
+            vec3 DEEP_SEA_COLOR     = vec3(0.84,0.9,0.62);
             vec4 LIGHT_POSITION     = vec4(1000.0,3.0,-1900.0, 1.0); 
 
             vec3 lightDir = normalize(LIGHT_POSITION.xyz); 
@@ -217,12 +234,13 @@
             
             float fresnel = 0.02 + 0.98 * pow(1.0 - dot(normal, view), 5.0);
 
-            vec3 refraction = DEEP_SEA_COLOR + diffuseFactor * refractionTex.xyz + SEA_WATER_COLOR; 
+            vec3 refraction = SEA_WATER_COLOR + diffuseFactor * (refractionTex.xyz + DEEP_SEA_COLOR*0.1); 
             vec3 reflection = reflectionTex.xyz;
+		
 
-            vec3 color = (refraction)*(fresnel)+ LIGHTCOLOR*(1.0- fresnel) *(DEEP_SEA_COLOR*0.5 + reflectionTex.xyz*0.0005);
-            color += SEA_WATER_COLOR * (wPosition.y*1.1/camPos.y + 0.1);
-
+            vec3 color = (refraction)*(1.0 -fresnel)+ (fresnel) *(SEA_WATER_COLOR*2.0 + reflectionTex.xyz) + LIGHTCOLOR*0.25 ;
+            color += DEEP_SEA_COLOR * (wPosition.y*4.0/(length(camPos.xyz - wPosition.xyz)));
+		
             float specular = pow(max(0.0, dot(reflect(lightDir, normal),-view)),600.0) * 10.0; 
             
             if(diffuseFactor>0.0)
