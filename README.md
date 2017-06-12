@@ -9,9 +9,9 @@ To run the program:
 
 
 Commands:
-  W: toggle wireframe
-  left, right, up down arrow: directions, displacement
-  a,z: pitch,
+  - W: toggle wireframe
+  - left, right, up down arrow: directions, displacement
+  - a,z: pitch,
 
 Small program written in typescript. It displays a wave constructed by the inverse FFT of the Phillips spectrum.
 
