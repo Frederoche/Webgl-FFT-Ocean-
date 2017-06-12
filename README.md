@@ -16,7 +16,7 @@ Commands:
 Small program written in typescript. It displays a wave constructed by the inverse FFT of the Phillips spectrum.
 
 <img src="https://github.com/Frederoche/Webgl-FFT-Ocean-/raw/master/waves1.PNG" width="600" style="max-width:100%;">
-<img src="https://github.com/Frederoche/Webgl-FFT-Ocean-/raw/master/capture.PNG" width="600" style="max-width:100%;">
+<img src="https://github.com/Frederoche/Webgl-FFT-Ocean-/raw/master/Capture.PNG" width="600" style="max-width:100%;">
 
 <a href ="https://aqueous-harbor-55474.herokuapp.com/">Demo (projected grid)</a><br/>
 <br>
