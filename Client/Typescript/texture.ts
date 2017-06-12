@@ -70,7 +70,7 @@ namespace Ocean
 
         public createTexture(callback)
         {
-            d
+            
              let image = new Image(512,512);
              let texture = this.gl.createTexture();
 
@@ -90,7 +90,7 @@ namespace Ocean
 
              }, false);
 
-             image.src = "http://localhost:8000/images/skybox.jpg";
+             image.src = "images/Skybox2.jpg";
         }
     }
 

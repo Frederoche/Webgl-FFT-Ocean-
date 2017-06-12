@@ -74,7 +74,7 @@
             if(wPos.y < -0.2)
                gl_FragColor = vec4(0.11,0.18,0.23, 1.0);       
            else
-                gl_FragColor = vec4(1.0, 1.0,1.0, 1.0);
+                gl_FragColor = tex;
          }
     </script>
 
@@ -223,10 +223,7 @@
             vec3 color = (refraction)*(fresnel)+ LIGHTCOLOR*(1.0- fresnel) *(DEEP_SEA_COLOR*0.5 + reflectionTex.xyz*0.0005);
             color += SEA_WATER_COLOR * (wPosition.y*1.1/camPos.y + 0.1);
 
-        
-            
             float specular = pow(max(0.0, dot(reflect(lightDir, normal),-view)),600.0) * 10.0; 
-            
             
             if(diffuseFactor>0.0)
                 color+= specular * LIGHTCOLOR;
