@@ -20,6 +20,8 @@ Further work:
  - The sun is missing, should be aaded in the skybox shader
  - Better and more realistic scattering should be implemented
  - better UX
+ - remove symmetry on the ocean by blending it with perlin noise
+ - port the FFT on the GPU
  
  
 
