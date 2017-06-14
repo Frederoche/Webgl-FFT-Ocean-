@@ -25,6 +25,8 @@ canvas {
     height: 1px;
     z-index: 1000;
     position: absolute;
+    left: 0px;
+    margin:0;
 }
 
 #spacial {
