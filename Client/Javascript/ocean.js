@@ -9,7 +9,7 @@ var Ocean;
             this.birdViewMatrix = mat4.create();
             this.invProj = mat4.create();
             this.invView = mat4.create();
-            this.chunck = new Ocean.chunck(gl, 250);
+            this.chunck = new Ocean.chunck(gl, 512);
             this.interval = 1.0;
             this.ext = this.gl.getExtension("ANGLE_instanced_arrays");
             this.floatExtension = this.gl.getExtension("OES_texture_float");
@@ -28,6 +28,7 @@ var Ocean;
             this.displacementTexture = new Ocean.Texture(this.gl, 64);
         }
         Engine.prototype.load = function () {
+            this.gl.getExtension('OES_element_index_uint');
             this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
             this.gl.clearColor(1.0, 1.0, 1.0, 1.0);
             this.gl.clearDepth(1);

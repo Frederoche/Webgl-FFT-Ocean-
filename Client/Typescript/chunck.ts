@@ -29,9 +29,9 @@ namespace Ocean
         {
             let k = 0, n = 0;
             
-            for(let i = 0; i <this.size+1; i++)
+            for(let i = 0; i <this.size+1 ; i++)
             {
-                for(let j = 0; j < this.size+1; j++)
+                for(let j = 0; j < this.size+1 ; j++)
                 {
                     this.vertices [k] = -1 + 2 * i / (this.size+1);
                     this.vertices [k + 1] = 0.0;
@@ -46,7 +46,7 @@ namespace Ocean
                 for (let j = 0; j < this.size;j++)
                 {
                     this.indices[n] = i + j * (this.size+1);
-                    this.indices[n + 1] = i + 1 + j * (this.size+1);
+                    this.indices[n + 1] = i + 1 + j * (this.size +1);
                     this.indices[n + 2] = i + (j + 1) * (this.size+1);
                     this.indices[n + 3] = i + (j + 1) * (this.size+1);
                     this.indices[n + 4] = i + 1 + j * (this.size+1);
@@ -55,17 +55,7 @@ namespace Ocean
                 }
             }
 
-            let offset = new Float32Array([
-                        0.0, 0.0, 0.0,
-                        127.0, 0.0, 0.0,
-                        0.0, 0.0, 127.0,
-                        127.0, 0.0, 127.0,
-                        254.0, 0.0, 0.0,
-                        0.0, 0.0, 254.0,
-                        254, 0.0, 254.0,
-                        127, 0.0, 254.0,
-                        254, 0.0, 127.0,
-                        ]);
+           
 
             
             this.gl.useProgram(this.program);
@@ -74,10 +64,9 @@ namespace Ocean
                 this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.vertices), this.gl.STATIC_DRAW);
                 
                 this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-                this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.indices), this.gl.DYNAMIC_DRAW);
+                this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(this.indices), this.gl.DYNAMIC_DRAW);
 
-                this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.offsetBuffer);
-                this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(offset), this.gl.STATIC_DRAW);
+                
 
             this.gl.useProgram(null);
         }
@@ -104,7 +93,7 @@ namespace Ocean
                     this.gl.uniform1i(this.program.reflection, 1);
                     
                     this.gl.bindTexture(this.gl.TEXTURE_2D, reflection.texture);
-                    this.gl.activeTexture(this.gl.TEXTURE0+2);
+                    this.gl.activeTexture(this.gl.TEXTURE0 + 2);
                     this.gl.uniform1i(this.program.reflection, 2);
 
                     this.gl.bindTexture(this.gl.TEXTURE_2D, refraction.texture);
@@ -114,10 +103,10 @@ namespace Ocean
                     //LOAD OCEAN GRID
                     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertexBuffer);
                     this.gl.enableVertexAttribArray(this.program.vertexPositionAttribute);
-                    this.gl.vertexAttribPointer(this.program.vertexPositionAttribute, 3, this.gl.FLOAT, false, 12, 0);
+                    this.gl.vertexAttribPointer(this.program.vertexPositionAttribute, 3, this.gl.FLOAT, false, 0, 0);
                     
                     this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-                    this.gl.drawElements(wireframe, this.indices.length, this.gl.UNSIGNED_SHORT,0);
+                    this.gl.drawElements(wireframe, this.indices.length, this.gl.UNSIGNED_INT,0);
                     
 
                     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, null);

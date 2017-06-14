@@ -40,24 +40,11 @@ var Ocean;
                     n += 6;
                 }
             }
-            var offset = new Float32Array([
-                0.0, 0.0, 0.0,
-                127.0, 0.0, 0.0,
-                0.0, 0.0, 127.0,
-                127.0, 0.0, 127.0,
-                254.0, 0.0, 0.0,
-                0.0, 0.0, 254.0,
-                254, 0.0, 254.0,
-                127, 0.0, 254.0,
-                254, 0.0, 127.0,
-            ]);
             this.gl.useProgram(this.program);
             this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertexBuffer);
             this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.vertices), this.gl.STATIC_DRAW);
             this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-            this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.indices), this.gl.DYNAMIC_DRAW);
-            this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.offsetBuffer);
-            this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(offset), this.gl.STATIC_DRAW);
+            this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(this.indices), this.gl.DYNAMIC_DRAW);
             this.gl.useProgram(null);
         };
         chunck.prototype.Draw = function (ext, wireframe, camera, projMatrix, viewMatrix, reflection, displacement, refraction, invProj, invView, birdviewMatrix) {
@@ -83,9 +70,9 @@ var Ocean;
             //LOAD OCEAN GRID
             this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertexBuffer);
             this.gl.enableVertexAttribArray(this.program.vertexPositionAttribute);
-            this.gl.vertexAttribPointer(this.program.vertexPositionAttribute, 3, this.gl.FLOAT, false, 12, 0);
+            this.gl.vertexAttribPointer(this.program.vertexPositionAttribute, 3, this.gl.FLOAT, false, 0, 0);
             this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-            this.gl.drawElements(wireframe, this.indices.length, this.gl.UNSIGNED_SHORT, 0);
+            this.gl.drawElements(wireframe, this.indices.length, this.gl.UNSIGNED_INT, 0);
             this.gl.bindBuffer(this.gl.ARRAY_BUFFER, null);
             this.gl.disable(this.gl.BLEND);
             this.gl.useProgram(null);
