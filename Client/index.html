@@ -140,24 +140,26 @@
             
             camPos = cameraPosition;
               
-	   		
-      
             u.y = d.y ;
             u.x = (u.x + d.x);
             u.z = (u.z + d.z);
     		
 
-	     wPosition = vec4(u.x, u.y, u.z, 1.0);
+	        wPosition = vec4(u.x, u.y, u.z, 1.0);
             clipSpace  = projMatrix * viewMatrix * vec4(u , 1.0); 
 
             pos = (viewMatrix * vec4(worldSpace , 1.0)); 
-
-            
             
             if (t > 0.0) 
             {
                 gl_Position = clipSpace;
             }
+            else
+            {
+                gl_Position = vec4(0.0,0.0,0.0,0.0);
+             }
+            
+                
          }
     </script>
 <script id="fragmentShader" type="x-shader/x-fragment">

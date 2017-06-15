@@ -33,9 +33,9 @@ namespace Ocean
             {
                 for(let j = 0; j < this.size+1 ; j++)
                 {
-                    this.vertices [k] = -1 + 2 * i / (this.size+1);
+                    this.vertices [k] = -1 + 2 * i / (this.size);
                     this.vertices [k + 1] = 0.0;
-                    this.vertices [k + 2] = -1 + 2 * j / (this.size+1);
+                    this.vertices [k + 2] = -1 + 2 * j / (this.size);
 
                     k +=3;
                 }
