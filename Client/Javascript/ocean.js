@@ -66,7 +66,7 @@ var Ocean;
             this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
             this.skybox.render(this.projMatrix, this.viewMatrix, false, false);
             this.generateWaves();
-            mat4.perspective(45.0, 1.0, 0.01, 4000.0, this.projMatrix);
+            mat4.perspective(55.0, 1.0, 0.1, 4000.0, this.projMatrix);
             mat4.perspective(65.0, 1.0, 0.01, 4000.0, this.invProj);
             mat4.lookAt(this.camera.position, this.camera.lookAt, this.camera.up, this.viewMatrix);
             mat4.lookAt(this.birdCamera.position, this.birdCamera.lookAt, this.birdCamera.up, this.birdViewMatrix);

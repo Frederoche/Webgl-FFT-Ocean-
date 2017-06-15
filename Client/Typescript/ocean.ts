@@ -143,7 +143,7 @@ namespace Ocean
 
               this.generateWaves();
 
-              mat4.perspective(45.0, 1.0, 0.01, 4000.0, this.projMatrix);
+              mat4.perspective(55.0, 1.0, 0.1, 4000.0, this.projMatrix);
               mat4.perspective(65.0, 1.0, 0.01, 4000.0, this.invProj);
 
               mat4.lookAt(this.camera.position, this.camera.lookAt, this.camera.up, this.viewMatrix);
