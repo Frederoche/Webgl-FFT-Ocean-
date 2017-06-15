@@ -1,20 +1,26 @@
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var Ocean;
 (function (Ocean) {
     var chunck = (function (_super) {
         __extends(chunck, _super);
         function chunck(gl, size) {
-            _super.call(this, gl);
-            this.gl = gl;
-            this.size = size;
-            this.indices = [];
-            this.vertices = [];
-            this.clipPlane = [];
-            _super.prototype.createProgram.call(this, 'vertexShader', 'fragmentShader', true);
+            var _this = _super.call(this, gl) || this;
+            _this.gl = gl;
+            _this.size = size;
+            _this.indices = [];
+            _this.vertices = [];
+            _this.clipPlane = [];
+            _super.prototype.createProgram.call(_this, 'vertexShader', 'fragmentShader', true);
+            return _this;
         }
         chunck.prototype.update = function () {
             _super.prototype.update.call(this, this.vertices);

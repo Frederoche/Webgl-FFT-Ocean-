@@ -143,15 +143,14 @@ namespace Ocean
 
               this.generateWaves();
 
-              
-              mat4.perspective(60.0, 1.1, window.innerWidth/window.innerHeight, 4000.0, this.projMatrix);
+              mat4.perspective(45.0, 1.0, 0.01, 4000.0, this.projMatrix);
+              mat4.perspective(65.0, 1.0, 0.01, 4000.0, this.invProj);
 
               mat4.lookAt(this.camera.position, this.camera.lookAt, this.camera.up, this.viewMatrix);
               mat4.lookAt(this.birdCamera.position, this.birdCamera.lookAt, this.birdCamera.up,this.birdViewMatrix);
 
-
               mat4.inverse(this.viewMatrix, this.invView);
-              mat4.inverse(this.projMatrix, this.invProj);
+              mat4.inverse(this.invProj, this.invProj);
 
               this.chunck.Draw(this.ext, this.wireframe, this.camera, this.projMatrix, this.viewMatrix, this.reflection,this.displacementTexture ,this.refraction, this.invProj, this.invView, this.birdViewMatrix);
               
