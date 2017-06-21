@@ -19,7 +19,7 @@ namespace Ocean
 
             this.angle = -1.035;
             this.pitch = 2.17;
-            this.speed = 1.0;
+            this.speed = 0.25;
         }
 
         moveForward() {
