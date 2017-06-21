@@ -140,7 +140,10 @@
             
             camPos = cameraPosition;
               
-            u.y = d.y ;
+            //attenuation horizont
+            float att = 1.4/pow(length(camPos - u), 1.0/3.0);
+            
+            u.y = d.y * att;
             u.x = (u.x + d.x);
             u.z = (u.z + d.z);
     		
