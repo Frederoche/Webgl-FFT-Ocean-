@@ -7,7 +7,7 @@ var Ocean;
             this.up = vec3.create(up0);
             this.angle = -1.035;
             this.pitch = 2.17;
-            this.speed = 1.0;
+            this.speed = 0.25;
         }
         Camera.prototype.moveForward = function () {
             vec3.add(this.position, [this.speed * Math.cos(this.angle) * Math.sin(this.pitch), this.speed * Math.cos(this.pitch), this.speed * Math.sin(this.angle) * Math.sin(this.pitch)], this.position);
