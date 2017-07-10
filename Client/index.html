@@ -247,7 +247,7 @@
             if(diffuseFactor>0.0)
                 color+= specular * LIGHTCOLOR;
      
-            gl_FragColor = vec4(1.0 - exp(-0.95*color), 1.0); 
+            gl_FragColor = vec4(1.0 - exp(-1.2*color*color), 1.0); 
     }
      </script>
 </head>
