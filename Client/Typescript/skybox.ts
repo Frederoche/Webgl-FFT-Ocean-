@@ -15,7 +15,7 @@ namespace Ocean{
             this.gl = gl;
             this.size = size;
             this.indices = [];
-            this.texture = this.gl.createTexture();
+            
             new Texture(this.gl, 512).createTexture((texture)=>{
                 this.texture = texture;
             });
@@ -77,8 +77,7 @@ namespace Ocean{
 
         public render(projMatrix, viewMatrix, isclipped, isReflection)
         {
-            this.gl.disable(this.gl.DEPTH_TEST);
-            //this.gl.depthMask(false);
+           
             this.gl.useProgram(this.program);
            
             if (isReflection)
@@ -104,12 +103,14 @@ namespace Ocean{
                 this.gl.vertexAttribPointer(this.program.texcoord, 2, this.gl.FLOAT, false, 20, 12);
 
                 this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
+
+                this.gl.depthMask(false);
                 this.gl.drawElements(this.gl.TRIANGLES, this.indices.length, this.gl.UNSIGNED_BYTE, 0);
+                this.gl.depthMask(true)
                 
                 this.gl.useProgram(null);
 
-               // this.gl.depthMask(true)
-               this.gl.enable(this.gl.DEPTH_TEST);
+              
         }
 
     }

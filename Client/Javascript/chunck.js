@@ -70,9 +70,6 @@ var Ocean;
             this.gl.bindTexture(this.gl.TEXTURE_2D, reflection.texture);
             this.gl.activeTexture(this.gl.TEXTURE0 + 2);
             this.gl.uniform1i(this.program.reflection, 2);
-            this.gl.bindTexture(this.gl.TEXTURE_2D, refraction.texture);
-            this.gl.activeTexture(this.gl.TEXTURE0 + 3);
-            this.gl.uniform1i(this.program.refraction, 3);
             //LOAD OCEAN GRID
             this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertexBuffer);
             this.gl.enableVertexAttribArray(this.program.vertexPositionAttribute);

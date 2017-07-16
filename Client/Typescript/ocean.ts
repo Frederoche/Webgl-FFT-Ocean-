@@ -70,7 +70,6 @@ namespace Ocean
             this.skybox = new SkyBox(gl, 100);
 
             this.reflection = new FrameBuffer(window.innerWidth, window.innerHeight, this.gl); 
-            this.refraction = new FrameBuffer(window.innerWidth, window.innerHeight, this.gl);
 
             this.camera = new Camera(vec3.create([26,2,326]), vec3.create([26.417,2,325.4]), vec3.create([0,1,0]));
             this.birdCamera = new Camera(vec3.create([26,140,400.0]), vec3.create([26.417,131.32,325.4]), vec3.create([0,1,0]));
@@ -80,6 +79,7 @@ namespace Ocean
         }
 
         public load() {
+           
             this.gl.getExtension('OES_element_index_uint');
 
             this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
@@ -91,13 +91,9 @@ namespace Ocean
             this.chunck.create();
 
             this.reflection.CreateFrameBuffer();
-            this.refraction.CreateFrameBuffer();
         }
 
         private generateWaves() {
-
-           
-                
             this.frameNumber = window.requestAnimationFrame(() => {
                 this.interval += 1.0/6.0;
 
@@ -107,12 +103,8 @@ namespace Ocean
                 let x = this.fft.Inverse2D(spectrum.x);
                 let z = this.fft.Inverse2D(spectrum.z);
 
-
                 this.displacementTexture.texture(x, h, z);
-
                     this.render();
-
-
                 });
         }
 
@@ -123,19 +115,20 @@ namespace Ocean
               let text = <HTMLInputElement>document.getElementById("camera-height"); 
               
               text.value = this.camera.position[1];
+              
+              let reflectionMatrix = mat4.create([1.0,0.0,0.0,0.0,
+                                                  0.0, -1.0, 0.0 ,0.0,
+                                                  0.0, 0.0, 1.0, 0.0,
+                                                  0.0, 0.0, 0.0, 1.0]);
+               var reflView = mat4.create();
+               mat4.multiply(this.viewMatrix, reflectionMatrix, reflView);
 
-
+              
               //REFLECTION FRAMEBUFFER RENDERING
-              this.reflection.BeginRenderframeBuffer(this.camera, true);
-                this.skybox.render(this.projMatrix, this.viewMatrix, true, true);  
-              this.reflection.EndRenderBuffer(this.camera, true); 
-
-
-              //REFRACTION FRAMEBUFFER RENDERING
-              this.refraction.BeginRenderframeBuffer(this.camera, false);
-                this.skybox.render(this.projMatrix, this.viewMatrix, true, false); 
-              this.refraction.EndRenderBuffer(this.camera, false);
-
+              this.reflection.BeginRenderframeBuffer();
+                this.skybox.render(this.projMatrix, reflView, true, false); 
+              this.reflection.EndRenderBuffer();
+             
 
               //REST OF SCENE
               this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
@@ -143,21 +136,15 @@ namespace Ocean
 
               this.generateWaves();
 
-              mat4.perspective(55.0, 1.0, 0.1, 4000.0, this.projMatrix);
+              mat4.perspective(55.0, 1.0, 0.1,  4000.0, this.projMatrix);
               mat4.perspective(65.0, 1.0, 0.01, 4000.0, this.invProj);
 
               mat4.lookAt(this.camera.position, this.camera.lookAt, this.camera.up, this.viewMatrix);
-              mat4.lookAt(this.birdCamera.position, this.birdCamera.lookAt, this.birdCamera.up,this.birdViewMatrix);
-
+              
               mat4.inverse(this.viewMatrix, this.invView);
               mat4.inverse(this.invProj, this.invProj);
-		
 
-	      
-
-              this.chunck.Draw(this.ext, this.wireframe, this.camera, this.projMatrix, this.viewMatrix, this.reflection,this.displacementTexture ,this.refraction, this.invProj, this.invView, this.birdViewMatrix);
-	      
-              
+              this.chunck.Draw(this.ext, this.wireframe, this.camera, this.projMatrix, this.viewMatrix, this.reflection,this.displacementTexture ,this.refraction, this.invProj, this.invView, this.birdViewMatrix);              
         }
     }
 }
@@ -169,7 +156,6 @@ window.onload = () => {
     canvas.height   = window.innerHeight;
 
     let gl          = <WebGLRenderingContext> canvas.getContext('experimental-webgl',{antialias: true});
-
     var engine      = new Ocean.Engine(gl, canvas, gl.TRIANGLES); 
 
     engine.load();
@@ -177,7 +163,7 @@ window.onload = () => {
     
     let choppiness = <HTMLInputElement> document.getElementById("choppiness");
     
-
+    
     choppiness.oninput = (e) =>
     {
         engine.displacementTexture.lambda = parseInt((<any>e.target).value)/10;

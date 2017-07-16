@@ -31,12 +31,13 @@
         
         void main(void) 
         { 
-            texcoord = texCoord; 
+            texcoord = texCoord;    
             wPos = position; 
 
-            eyespacePos = vec4(position.x*size, position.y*size  ,position.z*size , 1.0) ;
+            eyespacePos =   vec4(position.x * size, position.y * size  ,position.z * size , 1.0) ;
             
-            gl_Position = projMatrix * viewMatrix * vec4(position.x* size, position.y * size ,position.z * size, 1.0); 
+            gl_Position = projMatrix * viewMatrix * vec4(position.x* size, position.y * size ,position.z * size, 1.0);
+            
         }
 
     </script>
@@ -66,31 +67,31 @@
         { 
 		    vec4 LIGHT_POSITION = vec4(1000.0,3.0,-1900.0, 1.0); 
 
-		float lightDistance = distance(LIGHT_POSITION.xyz);
+		    float lightDistance = distance(LIGHT_POSITION.xyz);
 	
-		float clampedDistance= clamp(lightDistance, 0.0, 1.0);
-		float sun = clamp(1.0 - smoothstep(0.01, 0.1, clampedDistance), 0.0, 1.0);
+		    float clampedDistance= clamp(lightDistance, 0.0, 1.0);
+		    float sun = clamp(1.0 - smoothstep(0.01, 0.1, clampedDistance), 0.0, 1.0);
 	
-		float h = wPos .y + 0.01;
-		h = (0.5 * mix(clampedDistance, 1.0, h)) / h;
+		    float h = wPos .y + 0.01;
+		    h = (0.5 * mix(clampedDistance, 1.0, h)) / h;
     
-        vec3 gradient= mie(lightDistance, vec3(0.5));
+            vec3 gradient= mie(lightDistance, vec3(0.5));
 		
-		vec3 color = h * vec3(0.32, 0.6, 1.0);
+		    vec3 color = h * vec3(0.32, 0.6, 1.0);
     
-    	color = max(color, 0.0);
+    	    color = max(color, 0.0);
     
-		color = max(mix(pow(color, 1.0 - color), color / (2.0 * color + 0.5 - color), clamp(LIGHT_POSITION.y* 2.0, 0.0, 1.0)),0.0) + sun + gradient;
+		    color = max(mix(pow(color, 1.0 - color), color / (2.0 * color + 0.5 - color), clamp(LIGHT_POSITION.y* 2.0, 0.0, 1.0)),0.0) + sun + gradient;
 
-            if(isclipped == 1.0 && dot(eyespacePos,clipplane) > 0.0  )
+            if(isclipped == 1.0 && dot(eyespacePos, clipplane) >= 0.0)
             { 
                 discard; 
             } 
-        
+            
             if(wPos.y < -0.01)
-               		gl_FragColor = vec4(0.11,0.18,0.23, 1.0);       
-           	else
-                	gl_FragColor = vec4(color, 1.0);
+                gl_FragColor = vec4(0.15,0.2,0.24, 1.0);       
+            else
+                gl_FragColor = vec4(color, 1.0);
             
             	
 	}
@@ -121,6 +122,7 @@
         varying vec4 pos; 
         varying vec3 camPos;
         
+        
         void main(void)
         { 
             vec4 vertex = vec4(position.x, position.z, 0.0, 1.0); 
@@ -134,25 +136,27 @@
 
             texcoord = (u.xz + 1.0) * 0.5; 
     
-            vec4 d  = texture2D(displacement, texcoord);
+            vec4 d   = texture2D(displacement, texcoord);
             
             camPos = cameraPosition;
               
             //attenuation horizont
             float att = 1.4/pow(length(camPos - u), 1.0/3.0);
             
-            u.y = d.y * att;
+            u.y = d.y* att;
             u.x = (u.x + d.x);
             u.z = (u.z + d.z);
     		
-	        wPosition = vec4(u.x, u.y, u.z, 1.0);
+            wPosition = vec4(u.x, u.y, u.z, 1.0);
+                    
             clipSpace  = projMatrix * viewMatrix * vec4(u , 1.0); 
-
+            
+           
             pos = (viewMatrix * vec4(worldSpace , 1.0)); 
             
             if (t > 0.0) 
             {
-                gl_Position = clipSpace;
+                gl_Position = projMatrix * viewMatrix * vec4(u , 1.0);
             }
             else
             {
@@ -179,18 +183,19 @@
         varying vec4 pos; 
         
         varying vec4 eyespacePos;
-        varying vec4 clipSpace; 
+        varying vec4 clipSpace;
+       
 
         vec3 calcNormals(sampler2D text, vec2 texcoords) { 
 
             float texel = 1.0 / 128.0;
-            float texelSize = 1.0 / 64.0; 
+            float texelSize =   2.0/ 128.0; 
 
             vec3 center = texture2D(text, texcoords).xyz; 
 
             vec3 left   = vec3(-texelSize, 0.0,0.0)  + texture2D(text, texcoords + vec2(-texel, 0.0)).xyz - center; 
-            vec3 right  = vec3(texelSize, 0.0, 0.0)  + texture2D(text, texcoords + vec2(texel, 0.0)).xyz - center; 
-            vec3 bottom = vec3(0.0, 0.0, texelSize)  + texture2D(text, texcoords + vec2(0.0, texel)).xyz - center;
+            vec3 right  = vec3(texelSize, 0.0, 0.0)  + texture2D(text, texcoords + vec2(texel, 0.0)).xyz  - center; 
+            vec3 bottom = vec3(0.0, 0.0, texelSize)  + texture2D(text, texcoords + vec2(0.0, texel)).xyz  - center;
             vec3 top    = vec3(0.0, 0.0, -texelSize) + texture2D(text, texcoords + vec2(0.0, -texel)).xyz - center; 
 
             vec3 topRight    = cross(right, top); 
@@ -205,49 +210,46 @@
         
         void main(void) { 
             vec3 LIGHTCOLOR         = vec3(0.5, 0.5, 0.5); 
-            vec3 SEA_WATER_COLOR    = vec3(0.1,0.19,0.3); 
-            vec3 DEEP_SEA_COLOR     = vec3(0.6,0.8,0.9);
+            vec3 SEA_WATER_COLOR    = vec3(0.05,0.1,0.15); 
+            vec3 DEEP_SEA_COLOR     = vec3(0.15,0.2,0.24);
             vec4 LIGHT_POSITION     = vec4(1000.0,3.0,-1900.0, 1.0); 
 
             vec3 lightDir = normalize(LIGHT_POSITION.xyz); 
             vec3 view     = normalize(camPos - wPosition.xyz); 
                 
-            
             vec2 reflectionCoord;
-            vec2 refractionCoord; 
-    
+            vec2 refractionCoord;
+             
             reflectionCoord.x = 0.5*(clipSpace.w + clipSpace.x)/clipSpace.w;
-            reflectionCoord.y = 0.5*(clipSpace.w - clipSpace.y)/clipSpace.w;
+            reflectionCoord.y = 0.5*(clipSpace.w + clipSpace.y)/clipSpace.w;
     
             refractionCoord.x = 0.5*(clipSpace.w + clipSpace.x)/clipSpace.w;
             refractionCoord.y = 0.5*(clipSpace.w + clipSpace.y)/clipSpace.w;
     
             vec3 normal    = calcNormals(displacement, texcoord);
                       
-
             if (dot(view, normal) < 0.0) {
                 normal = reflect(normal, view);
             }     
-            
-            vec4 refractionTex = texture2D(refractionSampler, refractionCoord + 0.25*normal.xz); 
-            vec4 reflectionTex = texture2D(reflectionSampler, reflectionCoord - 0.25*normal.xz); 
+        
+            vec4 reflectionTex = texture2D(reflectionSampler, reflectionCoord ); 
         
             float diffuseFactor = clamp(dot(normal, lightDir.xyz), 0.0, 1.0); 
             
             float fresnel = 0.02 + 0.98 * pow(1.0 - dot(normal, view), 5.0);
 
-            vec3 refraction = SEA_WATER_COLOR + diffuseFactor * (refractionTex.xyz); 
+            vec3 refraction = DEEP_SEA_COLOR + diffuseFactor * SEA_WATER_COLOR; 
             vec3 reflection = reflectionTex.xyz;
 		
-            vec3 color = (refraction)*(1.0 -fresnel)+ (fresnel) *(SEA_WATER_COLOR+ reflectionTex.xyz) + LIGHTCOLOR*0.25 ;
-            color += DEEP_SEA_COLOR * (wPosition.y*2.0/(length(camPos.xyz - wPosition.xyz)));
+            vec3 color = refraction*(1.0 -fresnel)+ fresnel * reflectionTex.xyz;
+            color += DEEP_SEA_COLOR* (wPosition.y*8.0/(length(camPos.xyz - wPosition.xyz)));
 		
             float specular = pow(max(0.0, dot(reflect(lightDir, normal),-view)),600.0) * 10.0; 
             
             if(diffuseFactor>0.0)
                 color+= specular * LIGHTCOLOR;
      
-            gl_FragColor = vec4(1.0 - exp(-1.2*color*color), 1.0); 
+            gl_FragColor = vec4(color, 1.0); 
     }
      </script>
 </head>

@@ -22,7 +22,6 @@ var Ocean;
             this.wireframe = wireframe;
             this.skybox = new Ocean.SkyBox(gl, 100);
             this.reflection = new Ocean.FrameBuffer(window.innerWidth, window.innerHeight, this.gl);
-            this.refraction = new Ocean.FrameBuffer(window.innerWidth, window.innerHeight, this.gl);
             this.camera = new Ocean.Camera(vec3.create([26, 2, 326]), vec3.create([26.417, 2, 325.4]), vec3.create([0, 1, 0]));
             this.birdCamera = new Ocean.Camera(vec3.create([26, 140, 400.0]), vec3.create([26.417, 131.32, 325.4]), vec3.create([0, 1, 0]));
             this.displacementTexture = new Ocean.Texture(this.gl, 64);
@@ -36,7 +35,6 @@ var Ocean;
             this.skybox.create();
             this.chunck.create();
             this.reflection.CreateFrameBuffer();
-            this.refraction.CreateFrameBuffer();
         };
         Engine.prototype.generateWaves = function () {
             var _this = this;
@@ -54,14 +52,16 @@ var Ocean;
             this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
             var text = document.getElementById("camera-height");
             text.value = this.camera.position[1];
+            var reflectionMatrix = mat4.create([1.0, 0.0, 0.0, 0.0,
+                0.0, -1.0, 0.0, 0.0,
+                0.0, 0.0, 1.0, 0.0,
+                0.0, 0.0, 0.0, 1.0]);
+            var reflView = mat4.create();
+            mat4.multiply(this.viewMatrix, reflectionMatrix, reflView);
             //REFLECTION FRAMEBUFFER RENDERING
-            this.reflection.BeginRenderframeBuffer(this.camera, true);
-            this.skybox.render(this.projMatrix, this.viewMatrix, true, true);
-            this.reflection.EndRenderBuffer(this.camera, true);
-            //REFRACTION FRAMEBUFFER RENDERING
-            this.refraction.BeginRenderframeBuffer(this.camera, false);
-            this.skybox.render(this.projMatrix, this.viewMatrix, true, false);
-            this.refraction.EndRenderBuffer(this.camera, false);
+            this.reflection.BeginRenderframeBuffer();
+            this.skybox.render(this.projMatrix, reflView, true, false);
+            this.reflection.EndRenderBuffer();
             //REST OF SCENE
             this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
             this.skybox.render(this.projMatrix, this.viewMatrix, false, false);
@@ -69,7 +69,6 @@ var Ocean;
             mat4.perspective(55.0, 1.0, 0.1, 4000.0, this.projMatrix);
             mat4.perspective(65.0, 1.0, 0.01, 4000.0, this.invProj);
             mat4.lookAt(this.camera.position, this.camera.lookAt, this.camera.up, this.viewMatrix);
-            mat4.lookAt(this.birdCamera.position, this.birdCamera.lookAt, this.birdCamera.up, this.birdViewMatrix);
             mat4.inverse(this.viewMatrix, this.invView);
             mat4.inverse(this.invProj, this.invProj);
             this.chunck.Draw(this.ext, this.wireframe, this.camera, this.projMatrix, this.viewMatrix, this.reflection, this.displacementTexture, this.refraction, this.invProj, this.invView, this.birdViewMatrix);
