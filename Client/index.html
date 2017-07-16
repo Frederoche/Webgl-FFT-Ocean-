@@ -211,11 +211,13 @@
         void main(void) { 
             vec3 LIGHTCOLOR         = vec3(0.5, 0.5, 0.5); 
             vec3 SEA_WATER_COLOR    = vec3(0.05,0.1,0.15); 
-            vec3 DEEP_SEA_COLOR     = vec3(0.15,0.2,0.24);
+            vec3 DEEP_SEA_COLOR     = vec3(0.04,0.15,0.2);
             vec4 LIGHT_POSITION     = vec4(1000.0,3.0,-1900.0, 1.0); 
 
             vec3 lightDir = normalize(LIGHT_POSITION.xyz); 
             vec3 view     = normalize(camPos - wPosition.xyz); 
+
+            vec3 H = (lightDir + view)/length(lightDir + view);
                 
             vec2 reflectionCoord;
             vec2 refractionCoord;
@@ -227,7 +229,7 @@
             refractionCoord.y = 0.5*(clipSpace.w + clipSpace.y)/clipSpace.w;
     
             vec3 normal    = calcNormals(displacement, texcoord);
-                      
+           
             if (dot(view, normal) < 0.0) {
                 normal = reflect(normal, view);
             }     
@@ -238,11 +240,11 @@
             
             float fresnel = 0.02 + 0.98 * pow(1.0 - dot(normal, view), 5.0);
 
-            vec3 refraction = DEEP_SEA_COLOR + diffuseFactor * SEA_WATER_COLOR; 
+            vec3 refraction = SEA_WATER_COLOR+reflectionTex.xyz * diffuseFactor*0.1; 
             vec3 reflection = reflectionTex.xyz;
 		
-            vec3 color = refraction*(1.0 -fresnel)+ fresnel * reflectionTex.xyz;
-            color += DEEP_SEA_COLOR* (wPosition.y*8.0/(length(camPos.xyz - wPosition.xyz)));
+            vec3 color = refraction*(1.0 -fresnel) + fresnel * reflectionTex.xyz;
+            color += DEEP_SEA_COLOR* (wPosition.y*2.0/(length(camPos.xyz - wPosition.xyz)));
 		
             float specular = pow(max(0.0, dot(reflect(lightDir, normal),-view)),600.0) * 10.0; 
             
