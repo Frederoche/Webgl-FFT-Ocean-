@@ -143,7 +143,7 @@
             //attenuation horizont
             float att = 1.4/pow(length(camPos - u), 1.0/3.0);
             
-            u.y = d.y* att;
+            u.y = d.y * att;
             u.x = (u.x + d.x);
             u.z = (u.z + d.z);
     		
@@ -203,8 +203,18 @@
             vec3 bottomLeft  = cross(left, bottom); 
             vec3 bottomRight = cross(bottom, right); 
     
-            return normalize(topRight + topLeft + bottomLeft + bottomRight); 
+            return normalize(bottomRight+bottomLeft+topLeft+topRight); 
         } 
+
+        vec3 calcTang(sampler2D text, vec2 texcoords)
+        {
+             float texel = 1.0 / 128.0;
+             float texelSize =   2.0/ 128.0; 
+
+             vec3 center = texture2D(text, texcoords).xyz; 
+
+             return vec3(-texelSize, 0.0, 0.0)  + texture2D(text, texcoords + vec2(-texel, 0.0)).xyz  - center; 
+        }
 
         
         
@@ -228,11 +238,12 @@
             refractionCoord.x = 0.5*(clipSpace.w + clipSpace.x)/clipSpace.w;
             refractionCoord.y = 0.5*(clipSpace.w + clipSpace.y)/clipSpace.w;
     
-            vec3 normal    = calcNormals(displacement, texcoord);
+            vec3 normal  = calcNormals(displacement, texcoord);
            
             if (dot(view, normal) < 0.0) {
                 normal = reflect(normal, view);
-            }     
+            }  
+            
         
             vec4 reflectionTex = texture2D(reflectionSampler, reflectionCoord ); 
         

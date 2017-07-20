@@ -5,7 +5,7 @@ var Ocean;
             this.size = size;
             this.gl = gl;
             this.length = 1100.0;
-            this.windspeed = 25.0;
+            this.windspeed = 50.0;
             this.windX = -2.0;
             this.windY = -0.5;
             this.A = 0.0001;
@@ -17,9 +17,9 @@ var Ocean;
             var k = 0;
             var plot = new Ocean.Plot("spectrum", 64);
             var max = 0.0;
-            for (var i = 0; i < this.size; i++) {
+            for (var i = 0; i < this.size * 8; i++) {
                 result[i] = [];
-                for (var j = 0; j < this.size; j++) {
+                for (var j = 0; j < this.size * 8; j++) {
                     var parameter = {
                         g: this.g,
                         A: this.A,
@@ -108,8 +108,8 @@ var Ocean;
             var windkdot = kx * parameter.windX / wlength + ky * parameter.windY / wlength;
             if (windkdot == 0.0)
                 return 0.0;
-            var result = Math.exp(-knormalized * knormalized * 0.00001 * 0.00001) * parameter.A / (knormalized * knormalized * knormalized * knormalized) * Math.exp(-1.0 / (knormalized * knormalized * L * L))
-                * windkdot * windkdot;
+            var result = parameter.A / (knormalized * knormalized * knormalized * knormalized) * Math.exp(-1.0 / (knormalized * knormalized * L * L))
+                * windkdot * windkdot * windkdot * windkdot;
             return result;
         };
         Phillips.prototype.calculateH0 = function (input) {
