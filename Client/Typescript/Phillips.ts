@@ -22,7 +22,6 @@ namespace Ocean{
             this.windY = -0.5;
             this.A = 0.0001;
             this.g = 9.81;
-            this.maxh = 0.0;
         }
         
 
@@ -31,7 +30,7 @@ namespace Ocean{
             let result = [];
             let k = 0;
             let plot = new Plot("spectrum",64);
-            let max = 0.0;
+          
 
             for(var i = 0; i < this.size*8; i++)
             {
