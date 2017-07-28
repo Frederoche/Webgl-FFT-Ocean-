@@ -275,7 +275,7 @@
             vec3 reflection = reflectionTex.xyz;
 		
             vec3 color = refraction*(1.0 -fresnel) + fresnel * reflectionTex.xyz;
-            color += DEEP_SEA_COLOR* (wPosition.y*2.0/(length(camPos.xyz - wPosition.xyz)));
+            color += DEEP_SEA_COLOR* (wPosition.y*12.0/(length(camPos.xyz - wPosition.xyz)));
 		
             float specular = pow(max(0.0, dot(reflect(lightDir, normal),-view)),1000.0) * 10.0; 
             
