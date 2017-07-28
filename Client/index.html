@@ -27,12 +27,13 @@
         varying vec3 wPos; 
         varying vec4 eyespacePos;
 
-        float size = 2000.0;
+        varying float size;
         
         void main(void) 
         { 
             texcoord = texCoord;    
             wPos = position; 
+	    size = 2000.0;
 
             eyespacePos =   vec4(position.x * size, position.y * size  ,position.z * size , 1.0) ;
             
@@ -47,12 +48,16 @@
         varying vec2 texcoord; 
         varying vec3 wPos; 
         varying vec4 eyespacePos;
+	varying float size;
 
         uniform sampler2D texture; 
         uniform vec3 cameraPosition;
         
         uniform vec4 clipplane;
         uniform float isclipped;
+
+	const float Pi = 3.1415;
+	
 
         vec3 mie(float dist, vec3 lightColor){ 
             return max(exp(-pow(dist, 0.45)) * lightColor - 0.1, 0.0); 
@@ -65,38 +70,51 @@
         
         void main(void) 
         { 
-		    vec4 LIGHT_POSITION = vec4(1000.0,3.0,-1900.0, 1.0); 
-
-		    float lightDistance = distance(LIGHT_POSITION.xyz);
+	  vec4 LIGHT_POSITION = vec4(2000.0,3.0,-2000.0, 1.0);
+	  
+	  float lightDistance = distance(LIGHT_POSITION.xyz);
 	
-		    float clampedDistance= clamp(lightDistance, 0.0, 1.0);
-		    float sun = clamp(1.0 - smoothstep(0.01, 0.1, clampedDistance), 0.0, 1.0);
+	  float clampedDistance= clamp(lightDistance, 0.0, 1.0);
+          float sun = clamp(1.0 - smoothstep(0.01, 0.1, clampedDistance), 0.0, 1.0);
 	
-		    float h = wPos .y + 0.01;
-		    h = (0.5 * mix(clampedDistance, 1.0, h)) / h;
+	  float h = wPos .y + 0.01;
+	        h = (0.5 * mix(clampedDistance, 1.0, h)) / h;
     
-            vec3 gradient= mie(lightDistance, vec3(0.5));
+          vec3 gradient= mie(lightDistance, vec3(0.5));
 		
-		    vec3 color = h * vec3(0.32, 0.6, 1.0);
+	  vec3 color = h * vec3(0.32, 0.6, 1.0);
     
-    	    color = max(color, 0.0);
+    	  color = max(color, 0.0);
     
-		    color = max(mix(pow(color, 1.0 - color), color / (2.0 * color + 0.5 - color), clamp(LIGHT_POSITION.y* 2.0, 0.0, 1.0)),0.0) + sun + gradient;
+	  color = max(mix(pow(color, 1.0 - color), color / (2.0 * color + 0.5 - color), clamp(LIGHT_POSITION.y* 2.0, 0.0, 1.0)),0.0) + sun + gradient;
 
             if(isclipped == 1.0 && dot(eyespacePos, clipplane) >= 0.0)
             { 
                 discard; 
             } 
             
-            if(wPos.y < -0.01)
-                gl_FragColor = vec4(0.15,0.2,0.24, 1.0);       
-            else
+	  		
+          if(wPos.y < -0.01)
+                gl_FragColor = vec4(0.15,0.2,0.24, 1.0);        
+          else
                 gl_FragColor = vec4(color, 1.0);
             
-            	
+	  
+           float phi = 2.0*Pi;
+	   
+           
+           for(float i=0.0; i < 3.1415*2.0;i+=0.05)
+	    {
+		float x = cos(i)*0.025;
+		float y = sin(i)*0.025;
+	
+		if(wPos.y -0.2 < y && wPos.x - 0.62 < x && wPos.x -0.62 > -x && wPos.y -0.2 > -y)
+		    gl_FragColor = vec4(1.0, 1.0, 0.95, 1.0);
+	    }
+
 	}
     </script>
-
+16:48 28.07.2017
 <script id="vertexShader" type="x-shader/x-vertex">
         precision mediump float; 
         precision highp sampler2D;
@@ -133,10 +151,12 @@
             float t = (-cameraPosition.y)/worldSpace.y ;
 
             vec3 u =  (cameraPosition + t * worldSpace);
+	    
+            
 
             texcoord = (u.xz + 1.0) * 0.5; 
     
-            vec4 d   = texture2D(displacement, texcoord);
+	    vec4 d = texture2D(displacement, texcoord);
             
             camPos = cameraPosition;
               
@@ -245,7 +265,7 @@
             }  
             
         
-            vec4 reflectionTex = texture2D(reflectionSampler, reflectionCoord ); 
+            vec4 reflectionTex = texture2D(reflectionSampler, reflectionCoord +normal.xz*0.1); 
         
             float diffuseFactor = clamp(dot(normal, lightDir.xyz), 0.0, 1.0); 
             
@@ -257,7 +277,7 @@
             vec3 color = refraction*(1.0 -fresnel) + fresnel * reflectionTex.xyz;
             color += DEEP_SEA_COLOR* (wPosition.y*2.0/(length(camPos.xyz - wPosition.xyz)));
 		
-            float specular = pow(max(0.0, dot(reflect(lightDir, normal),-view)),600.0) * 10.0; 
+            float specular = pow(max(0.0, dot(reflect(lightDir, normal),-view)),1000.0) * 10.0; 
             
             if(diffuseFactor>0.0)
                 color+= specular * LIGHTCOLOR;

@@ -10,16 +10,14 @@ var Ocean;
             this.windY = -0.5;
             this.A = 0.0001;
             this.g = 9.81;
-            this.maxh = 0.0;
         }
         Phillips.prototype.createH0 = function () {
             var result = [];
             var k = 0;
             var plot = new Ocean.Plot("spectrum", 64);
-            var max = 0.0;
-            for (var i = 0; i < this.size * 8; i++) {
+            for (var i = 0; i < this.size * 2; i++) {
                 result[i] = [];
-                for (var j = 0; j < this.size * 8; j++) {
+                for (var j = 0; j < this.size * 2; j++) {
                     var parameter = {
                         g: this.g,
                         A: this.A,
@@ -44,9 +42,9 @@ var Ocean;
         };
         Phillips.prototype.createH1 = function () {
             var result = [];
-            for (var i = 0; i < this.size; i++) {
+            for (var i = 0; i < this.size * 2; i++) {
                 result[i] = [];
-                for (var j = 0; j < this.size; j++) {
+                for (var j = 0; j < this.size * 2; j++) {
                     var parameter = {
                         g: this.g,
                         A: this.A,

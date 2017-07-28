@@ -32,11 +32,11 @@ namespace Ocean{
             let plot = new Plot("spectrum",64);
           
 
-            for(var i = 0; i < this.size*8; i++)
+            for(var i = 0; i < this.size*2; i++)
             {
                 result[i] = [];
 
-                for(var j=0; j < this.size*8; j++)
+                for(var j=0; j < this.size*2; j++)
                 {
                     var parameter = {
 
@@ -73,11 +73,11 @@ namespace Ocean{
         {
             let result = [];
         
-            for(var i = 0; i < this.size; i++)
+            for(var i = 0; i < this.size*2; i++)
             {
                 result[i] = [];
 
-                for(var j=0; j < this.size; j++)
+                for(var j=0; j < this.size*2; j++)
                 {
                     var parameter = {
 

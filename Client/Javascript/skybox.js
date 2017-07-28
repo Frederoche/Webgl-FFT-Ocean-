@@ -1,27 +1,22 @@
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 var Ocean;
 (function (Ocean) {
     var SkyBox = (function (_super) {
         __extends(SkyBox, _super);
         function SkyBox(gl, size) {
-            var _this = _super.call(this, gl) || this;
-            _this.gl = gl;
-            _this.size = size;
-            _this.indices = [];
-            new Ocean.Texture(_this.gl, 512).createTexture(function (texture) {
+            var _this = this;
+            _super.call(this, gl);
+            this.gl = gl;
+            this.size = size;
+            this.indices = [];
+            new Ocean.Texture(this.gl, 512).createTexture(function (texture) {
                 _this.texture = texture;
             });
-            _super.prototype.createProgram.call(_this, "skyBoxVertexShader", "skyBoxfragmentShader", false);
-            return _this;
+            _super.prototype.createProgram.call(this, "skyBoxVertexShader", "skyBoxfragmentShader", false);
         }
         SkyBox.prototype.create = function () {
             var vertices = [-1, -1, -1, 0.25, 2.0 / 3.0,
