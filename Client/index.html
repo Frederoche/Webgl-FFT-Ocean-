@@ -233,17 +233,15 @@
              
             reflectionCoord.x = 0.5*(clipSpace.w + clipSpace.x)/clipSpace.w;
             reflectionCoord.y = 0.5*(clipSpace.w + clipSpace.y)/clipSpace.w;
-    
-            refractionCoord.x = 0.5*(clipSpace.w + clipSpace.x)/clipSpace.w;
-            refractionCoord.y = 0.5*(clipSpace.w + clipSpace.y)/clipSpace.w;
-    
+
             vec3 normal  = calcNormals(displacement, texcoord);
-           
+
+
             if (dot(view, normal) < 0.0) {
                 normal = reflect(normal, view);
             }  
             
-            vec4 reflectionTex = texture2D(reflectionSampler, reflectionCoord +normal.xz*0.1); 
+            vec4 reflectionTex = texture2D(reflectionSampler, reflectionCoord + normal.xz*0.01);
         
             float diffuseFactor = clamp(dot(normal, lightDir.xyz), 0.0, 1.0); 
             
