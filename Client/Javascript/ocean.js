@@ -86,6 +86,15 @@ window.onload = function () {
     engine.load();
     engine.render();
     var choppiness = document.getElementById("choppiness");
+    var wireframeButton = document.getElementById("wireframe");
+    wireframeButton.onchange = function (e) {
+        if (engine.wireframe === gl.TRIANGLES) {
+            engine.wireframe = gl.LINES;
+        }
+        else {
+            engine.wireframe = gl.TRIANGLES;
+        }
+    };
     choppiness.oninput = function (e) {
         engine.displacementTexture.lambda = parseInt(e.target.value) / 10;
     };

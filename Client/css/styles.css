@@ -5,7 +5,7 @@ body {
     margin: 0;
     overflow: hidden;
     font-family: Verdana;
-    color:white;
+    color: white;
 }
 
 canvas {
@@ -20,36 +20,38 @@ canvas {
 }
 
 #choppiness {
-    top: 460px;
-    width: 128px;
+    top: 700px;
+    width: 100%;
     height: 1px;
     z-index: 1000;
     position: absolute;
     left: 0px;
-    margin:0;
+    margin: 0;
 }
 
 #spacial {
     display: block;
     z-index: 1000;
     position: absolute;
-    top: 256px;
+    top: 400px;
     border: 1px solid white
 }
 
-#camera-height{
+#camera-height {
     display: block;
     z-index: 1000;
     position: absolute;
-    top: 512px;
-    width: 124px;
+    top: 750px;
+    width: 100%;
+    border: none;
+    height: 30px;
 }
 
 #hu {
     display: block;
     z-index: 1000;
     position: absolute;
-    top: 128px;
+    top: 200px;
     border: 1px solid white
 }
 
@@ -57,23 +59,36 @@ canvas {
     background-color: rgba(255, 255, 255, 0.5);
     z-index: 1000;
     position: absolute;
-    width: 130px;
+    width: 202px;
     display: block;
     height: 100vh;
 }
 
-#choppiness-lbl{
-   top: 437px;
-    width: 128px;
+#choppiness-lbl {
+    top: 670px;
+    width: 100%;
     height: 1px;
     z-index: 1000;
-    position: absolute; 
+    position: absolute;
 }
 
-#cheight-lbl{
-    top: 490px;
-    width: 128px;
+#cheight-lbl {
+    top: 720px;
+    width: 100%;
     height: 1px;
     z-index: 1000;
+    position: absolute;
+}
+
+#wireframe-lbl {
+    top: 800px;
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    z-index: 1000;
+}
+
+#wireframe {
+    top: 830px;
     position: absolute;
 }

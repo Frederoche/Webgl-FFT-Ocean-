@@ -162,12 +162,26 @@ window.onload = () => {
     engine.render();
     
     let choppiness = <HTMLInputElement> document.getElementById("choppiness");
+    let wireframeButton = <HTMLInputElement> document.getElementById("wireframe");
     
+    wireframeButton.onchange = (e) =>
+    {
+        if(engine.wireframe === gl.TRIANGLES)
+        {
+            engine.wireframe = gl.LINES
+        }
+        else
+        {
+            engine.wireframe = gl.TRIANGLES;
+        }
+    };
     
     choppiness.oninput = (e) =>
     {
         engine.displacementTexture.lambda = parseInt((<any>e.target).value)/10;
     };
+
+    
     
     document.onkeydown = (e) => {
 
