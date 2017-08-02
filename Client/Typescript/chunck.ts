@@ -73,8 +73,9 @@ namespace Ocean
 
         Draw(ext, wireframe, camera, projMatrix, viewMatrix, reflection , displacement, refraction, invProj, invView, birdviewMatrix)
         {
+            
             this.gl.useProgram(this.program);
-
+                    
                     //camera position, up vector, lookAt
                     this.gl.uniform3f(this.program.cameraPosition, camera.position[0], camera.position[1], camera.position[2]);
 
@@ -108,8 +109,8 @@ namespace Ocean
                     
 
                     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, null);
-                    this.gl.disable(this.gl.BLEND);
                     
+                this.gl.disable(this.gl.BLEND);
               this.gl.useProgram(null);
         }
     }

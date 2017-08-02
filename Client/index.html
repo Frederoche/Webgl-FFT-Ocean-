@@ -240,12 +240,16 @@
             vec2 refractionCoord;
              
             reflectionCoord.x = 0.5*(clipSpace.w + clipSpace.x)/clipSpace.w;
-            reflectionCoord.y = 0.5*(clipSpace.w + clipSpace.y)/clipSpace.w;
+            reflectionCoord.y = 0.5*(clipSpace.w + clipSpace.y)/clipSpace.w;	
 
             vec3 normal  = calcNormals(displacement, texcoord);
+	    
+	   
+
+	    vec3 reflected = reflect(view, normal);
 
             if (dot(view, normal) < 0.0) {
-                normal = reflect(normal, view);
+                normal = reflect(normal, -view);
             }  
             
             vec4 reflectionTex = texture2D(reflectionSampler, reflectionCoord + normal.xz*0.01);
@@ -254,13 +258,13 @@
             
             float fresnel = 0.02 + 0.98 * pow(1.0 - dot(normal, view), 5.0);
 
-            vec3 refraction = SEA_WATER_COLOR + reflectionTex.xyz * diffuseFactor*0.1; 
+            vec3 refraction = SEA_WATER_COLOR*2.0; 
             vec3 reflection = reflectionTex.xyz;	
 		
-            vec3 color = refraction*(1.0 -fresnel) + fresnel * reflectionTex.xyz;
-            color += DEEP_SEA_COLOR* (wPosition.y*10.0/(length(camPos.xyz - wPosition.xyz)));	
+            vec3 color = refraction*(1.0 -fresnel) + fresnel * reflectionTex.xyz*0.85;
+            color += DEEP_SEA_COLOR* (wPosition.y*5.0/(length(camPos.xyz - wPosition.xyz)));	
 		
-            float specular = pow(max(0.0, dot(reflect(lightDir, normal),-view)),2000.0) * 100.0; 
+            float specular = pow(max(0.0, dot(reflect(lightDir, normal),-view)),2000.0) * 100.0;
             
             if(diffuseFactor>0.0)	
                 color+= specular * LIGHTCOLOR;
