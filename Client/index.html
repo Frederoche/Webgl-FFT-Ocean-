@@ -194,6 +194,7 @@
         uniform sampler2D displacement; 
         uniform sampler2D reflectionSampler;
         uniform sampler2D refractionSampler; 
+		
         
         varying vec3 camPos;
         varying vec4 wPosition;
@@ -229,47 +230,67 @@
             vec3 LIGHTCOLOR         = vec3(0.5, 0.5, 0.25); 
             vec3 SEA_WATER_COLOR    = vec3(0.05,0.1,0.15); 
             vec3 DEEP_SEA_COLOR     = vec3(0.04,0.15,0.2);
-            vec4 LIGHT_POSITION     = vec4(1000.0,3.0,-1900.0, 1.0); 
+            vec4 LIGHT_POSITION     = vec4(1000.0,30.0,-1900.0, 1.0); 
+			vec3 AMBIENT_LIGHT 		= vec3(0.015,0.015,0.015);
+			
+			float PI = 3.1415;
 
             vec3 lightDir = normalize(LIGHT_POSITION.xyz); 
             vec3 view     = normalize(camPos - wPosition.xyz); 
 
-            vec3 H = (lightDir + view)/length(lightDir + view);
-                
+            vec3 H = normalize(lightDir + view);
+			vec3 normal  = calcNormals(displacement, texcoord);
+			
+			if (dot(view, normal) < 0.0) {
+                normal = reflect(normal, -view);
+            }
+			
+			//REFLECTION
             vec2 reflectionCoord;
             vec2 refractionCoord;
              
             reflectionCoord.x = 0.5*(clipSpace.w + clipSpace.x)/clipSpace.w;
             reflectionCoord.y = 0.5*(clipSpace.w + clipSpace.y)/clipSpace.w;	
 
-            vec3 normal  = calcNormals(displacement, texcoord);
-	    
-	   
-
-	    vec3 reflected = reflect(view, normal);
-
-            if (dot(view, normal) < 0.0) {
-                normal = reflect(normal, -view);
-            }  
-            
-            vec4 reflectionTex = texture2D(reflectionSampler, reflectionCoord + normal.xz*0.01);
+			//DISTORTION
+            vec4 reflectionTex = texture2D(reflectionSampler, reflectionCoord + normal.xz*0.1);
         
-            float diffuseFactor = clamp(dot(normal, lightDir.xyz), 0.0, 1.0); 
-            
-            float fresnel = 0.02 + 0.98 * pow(1.0 - dot(normal, view), 5.0);
-
-            vec3 refraction = SEA_WATER_COLOR*2.0; 
-            vec3 reflection = reflectionTex.xyz;	
-		
-            vec3 color = refraction*(1.0 -fresnel) + fresnel * reflectionTex.xyz*0.85;
-            color += DEEP_SEA_COLOR* (wPosition.y*5.0/(length(camPos.xyz - wPosition.xyz)));	
-		
-            float specular = pow(max(0.0, dot(reflect(lightDir, normal),-view)),2000.0) * 100.0;
-            
-            if(diffuseFactor>0.0)	
-                color+= specular * LIGHTCOLOR;
-     
-            gl_FragColor = vec4(color , 1.0); 
+            vec3 refraction = SEA_WATER_COLOR; 
+            vec3 reflection = reflectionTex.xyz;
+			
+			//COOK TORRANCE
+			float NdotL = max(dot(normal, lightDir), 0.0);
+			
+			float materialSpecular  = 0.0;
+			float k = 0.2;
+			
+			if(NdotL>0.0)
+			{
+				float NdotH = max(dot(normal, H), 0.0);
+				float NdotV = max(dot(normal, view), 0.0);
+				float VdotH = max(dot(view, H), 0.0);
+				
+				float NH2 = 2.0 * NdotH;
+				float gb = (NH2 * NdotV) / VdotH;
+				float gc = (NH2 * NdotL) / VdotH;
+				float geometricalAttenuation = min(1.0, min(gb, gc));
+				
+				//DISTRIBUTION
+				float constant = 1.0 / ( PI * 0.05 * pow(NdotH, 4.0));
+				float exponant = (NdotH * NdotH - 1.0) / (0.05 * NdotH * NdotH);
+				float roughness = constant * exp(exponant);
+				
+				float fresnelMat = pow(1.0 - VdotH, 5.0)*0.2 + 0.98;
+				materialSpecular = (fresnelMat * geometricalAttenuation * roughness) / (NdotV * NdotL * PI);
+			}
+			
+			vec3 cook =  AMBIENT_LIGHT + LIGHTCOLOR * NdotL * (k + materialSpecular * (1.0 - k));
+			float fresnelWater = 0.02 + 0.98 * pow(1.0 - dot(normal, view), 5.0);
+			
+			vec3 color = refraction*(1.0-fresnelWater)  + (fresnelWater) * reflectionTex.xyz;
+			color = color + cook;
+			
+            gl_FragColor = vec4(color, 1.0); 
     }
      </script>
 </head>	
