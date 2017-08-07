@@ -14,6 +14,7 @@
     <script src="Javascript/scene.js"></script>
     <script src="Javascript/FrameBuffer.js"></script>
     <script src="gl-matrix.js"></script>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <script id="skyBoxVertexShader" type="x-shader/x-vertex">
         precision mediump float; 
@@ -282,9 +283,9 @@
 
 <body>
     <div id="panel">
-        <img id="spectrum"      width="200" height="200"/>
-        <img id="hu"            width="200" height="200"/>	
-        <img id="spacial"       width="200" height="200"/>	
+        <img id="spectrum" class="img"/>
+        <img id="hu"       class="img"/>	
+        <img id="spacial"   class="img"/>	
         <input type = "text"    width="20" id="camera-height" disabled/>
         <label id="cheight-lbl">camera height</label>
         <label id="choppiness-lbl" for="choppiness">Choppiness</label>
