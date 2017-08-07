@@ -217,7 +217,7 @@
             vec3 LIGHTCOLOR         = vec3(0.5, 0.5, 0.25); 
             vec3 SEA_WATER_COLOR    = vec3(0.05,0.1,0.15); 
             vec4 LIGHT_POSITION     = vec4(1000.0,30.0,-1900.0, 1.0); 
-			vec3 AMBIENT_LIGHT 		= vec3(0.015,0.015,0.015);
+			
 			
 			float PI = 3.1415;
 
@@ -267,16 +267,17 @@
 				float roughness = constant * exp(exponant);
 				
 				float fresnelMat = pow(1.0 - VdotH, 5.0)*0.2 + 0.98;
-				materialSpecular = (fresnelMat * geometricalAttenuation * roughness) / (NdotV * NdotL * PI);
+				materialSpecular = (fresnelMat * geometricalAttenuation * roughness) / (NdotV * NdotL * 4.0);
 			}
-			
-			vec3 cook =  AMBIENT_LIGHT + LIGHTCOLOR * NdotL * (k + materialSpecular * (1.0 - k));
+
+			vec3 cook =  LIGHTCOLOR * NdotL * (k*refraction + materialSpecular * (1.0 - k) );
 			float fresnelWater = 0.02 + 0.98 * pow(1.0 - dot(normal, view), 5.0);
 			
 			vec3 color = refraction*(1.0-fresnelWater)  + (fresnelWater) * reflectionTex.xyz;
 			color = color + cook;
 			
-            gl_FragColor = vec4(color, 1.0); 
+			//HDR
+            gl_FragColor = vec4(1.0 - exp(-1.8*color), 1.0); 
     }
      </script>
 </head>	
