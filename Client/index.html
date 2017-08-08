@@ -26,7 +26,7 @@
 
         varying vec2 texcoord; 
         varying vec3 wPos; 
-        varying vec4 eyespacePos;
+        varying vec4 scaledPos;
 
         varying float size;
         
@@ -36,7 +36,7 @@
             wPos = position; 
 			size = 2000.0;
 
-            eyespacePos =   vec4(position.x * size, position.y * size  ,position.z * size , 1.0) ;
+            scaledPos =   vec4(position.x * size, position.y * size  ,position.z * size , 1.0) ;
             
             gl_Position = projMatrix * viewMatrix * vec4(position.x* size, position.y * size ,position.z * size, 1.0);
             
@@ -48,7 +48,7 @@
 
         varying vec2 texcoord; 
         varying vec3 wPos; 
-        varying vec4 eyespacePos;
+        varying vec4 scaledPos;
 		varying float size;
 
         uniform sampler2D texture; 
@@ -72,7 +72,7 @@
 			float lightDistance = length(LIGHT_POSITION.xyz);
 	
 			float clampedDistance= clamp(lightDistance, 0.0, 1.0);
-			float sun = clamp(1.0 - smoothstep(0.01, 0.1, clampedDistance), 0.0, 1.0);
+			float sun = clamp(1.0 - smoothstep(0.1, 0.1, clampedDistance), 0.0, 1.0);
 	
 			float h = wPos .y + 0.01;
 	        h = (0.5 * mix(clampedDistance, 1.0, h)) / h;
@@ -85,13 +85,13 @@
     
 		    color = max(mix(pow(color, 1.0 - color), color / (2.0 * color + 0.5 - color), clamp(LIGHT_POSITION.y* 2.0, 0.0, 1.0)),0.0) + sun + gradient;
 
-            if(isclipped == 1.0 && dot(eyespacePos, clipplane) >= 0.0)
+            if(isclipped == 1.0 && dot(scaledPos, clipplane) >= 0.0)
             { 
                 discard; 
             } 
 	
 			if(wPos.y < -0.01)
-				gl_FragColor = vec4(0.05,0.1,0.15, 1.0);        
+				gl_FragColor = vec4(0.05,0.1,0.15, 1.0);      
 			else
 				gl_FragColor = vec4(color, 1.0); //SKY COLOR
             
@@ -210,14 +210,12 @@
             vec3 bottomRight = cross(bottom, right); 
     
             return normalize(bottomRight+bottomLeft+topLeft+topRight); 
-        } 
+        }
 
-        
         void main(void) { 
             vec3 LIGHTCOLOR         = vec3(0.5, 0.5, 0.25); 
-            vec3 SEA_WATER_COLOR    = vec3(0.05,0.1,0.15); 
+            vec3 SEA_WATER_COLOR    = vec3(0.05,0.1,0.15) * length(1.0 - normalize(camPos - wPosition.xyz)); 
             vec4 LIGHT_POSITION     = vec4(1000.0,30.0,-1900.0, 1.0); 
-			
 			
 			float PI = 3.1415;
 
@@ -244,12 +242,13 @@
             vec3 refraction = SEA_WATER_COLOR; 
             vec3 reflection = reflectionTex.xyz;
 			
-			//COOK TORRANCE
+			//COOK TORRANCE 
 			float NdotL = max(dot(normal, lightDir), 0.0);
 			
 			float materialSpecular  = 0.0;
 			float k = 0.2;
 			
+			//SPECULAR
 			if(NdotL>0.0)
 			{
 				float NdotH = max(dot(normal, H), 0.0);
@@ -269,15 +268,27 @@
 				float fresnelMat = pow(1.0 - VdotH, 5.0)*0.2 + 0.98;
 				materialSpecular = (fresnelMat * geometricalAttenuation * roughness) / (NdotV * NdotL * 4.0);
 			}
-
-			vec3 cook =  LIGHTCOLOR * NdotL * (k*refraction + materialSpecular * (1.0 - k) );
+			
+			//DIFFUSE https://seblagarde.files.wordpress.com/2015/07/course_notes_moving_frostbite_to_pbr_v32.pdf
+			float LdotH = max(dot(lightDir, H), 0.0);
+			float f = 0.5 + 2.0 * 0.05 * LdotH * LdotH;
+			float scatterL = 0.02 + 0.98 * pow(1.0 - NdotL, 5.0);
+			float scatterV = 0.02 + 0.98 * pow(1.0 - dot(normal, view), 5.0);
+			
+			float diffuse = scatterL*scatterV/PI;
+			
+			vec3 cook =  LIGHTCOLOR * NdotL * (k + materialSpecular * (1.0 - k) );
 			float fresnelWater = 0.02 + 0.98 * pow(1.0 - dot(normal, view), 5.0);
 			
 			vec3 color = refraction*(1.0-fresnelWater)  + (fresnelWater) * reflectionTex.xyz;
-			color = color + cook;
+			color = color + cook + mix(diffuse * refraction, reflection, fresnelWater);
 			
 			//HDR
-            gl_FragColor = vec4(1.0 - exp(-1.8*color), 1.0); 
+			color = vec3(1.0) - exp(-1.2*color);
+			
+			
+			
+            gl_FragColor = vec4(color, 1.0); 
     }
      </script>
 </head>	
