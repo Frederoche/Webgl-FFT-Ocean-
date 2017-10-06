@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <head>
-    <link href="css/styles.css" rel="stylesheet"/>
+<link href="css/styles.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
     <script src="Javascript/Complex.js"></script>
     <script src="Javascript/Fourier.js"></script>
     <script src="Javascript/Phillips.js"></script>
@@ -61,13 +63,13 @@
 	
 
         vec3 grad(float dist, vec3 lightColor){ 
-            return max(exp(-pow(dist, 0.65)) * lightColor - 0.1, 0.0); 
+            return max(exp(-pow(dist, 0.85)) * lightColor - 0.1, 0.0); 
         } 
         
         
         void main(void) 
         { 
-			vec4 LIGHT_POSITION = vec4(2000.0,3.0,-2000.0, 1.0);
+			vec4 LIGHT_POSITION = vec4(1000.0,30.0,-1900.0, 1.0);
 	  
 			float lightDistance = length(LIGHT_POSITION.xyz);
 	
@@ -75,7 +77,7 @@
 			float sun = clamp(1.0 - smoothstep(0.1, 0.1, clampedDistance), 0.0, 1.0);
 	
 			float h = wPos .y + 0.01;
-	        h = (0.5 * mix(clampedDistance, 1.0, h)) / h;
+	        h = (0.25 * mix(clampedDistance, 1.0, h)) / h;
     
             vec3 gradient= grad(lightDistance, vec3(0.5));
 		
@@ -91,7 +93,7 @@
             } 
 	
 			if(wPos.y < -0.01)
-				gl_FragColor = vec4(0.05,0.1,0.15, 1.0);      
+				gl_FragColor = vec4(0.05,0.2,0.25, 1.0);      
 			else
 				gl_FragColor = vec4(color, 1.0); //SKY COLOR
             
@@ -131,7 +133,8 @@
         varying vec4 wPosition; 
         varying vec4 pos; 
         varying vec3 camPos;
-
+		
+		
         void main(void)
         { 
             
@@ -149,7 +152,7 @@
             camPos = cameraPosition;
               
             //ATTENUATION HORIZONT
-            float att = 1.4/pow(length(camPos - u), 1.0/3.0);
+            float att = 1.3/pow(length(camPos - u), 1.0/3.0);
             
             u.y = (d.y) * att;
             u.x = (u.x + d.x);
@@ -172,7 +175,6 @@
          }
     </script>
 <script id="fragmentShader" type="x-shader/x-fragment">
-
         precision highp float;
         precision highp sampler2D;
 
@@ -183,6 +185,7 @@
         uniform sampler2D refractionSampler; 
 		
         
+		
         varying vec3 camPos;
         varying vec4 wPosition;
         varying vec4 normalWorld; 
@@ -191,7 +194,7 @@
         varying vec4 eyespacePos;
         varying vec4 clipSpace;
        
-
+	
         vec3 calcNormals(sampler2D text, vec2 texcoords) { 
 
             float texel = 1.0 / 128.0;
@@ -214,7 +217,7 @@
 		
         void main(void) { 
             vec3 LIGHTCOLOR         = vec3(0.5, 0.5, 0.25); 
-            vec3 SEA_WATER_COLOR    = vec3(0.05,0.1,0.15) * length(1.0 - normalize(camPos - wPosition.xyz)); 
+            vec3 SEA_WATER_COLOR    = vec3(0.05,0.2,0.25); 
             vec4 LIGHT_POSITION     = vec4(1000.0,30.0,-1900.0, 1.0); 
 			
 			float PI = 3.1415;
@@ -246,26 +249,29 @@
 			float NdotL = max(dot(normal, lightDir), 0.0);
 			
 			float specularBRDF  = 0.0;
-			float k = 0.2;
+			float refractedBRDF = 0.0;
+			float k = 0.1;
 			
 			//SPECULAR
+			
+			float NdotH = max(dot(normal, H), 0.0);
+			float NdotV = max(dot(normal, view), 0.0);
+			float VdotH = max(dot(view, H), 0.0);
+			
+			float NH2 = 2.0 * NdotH;
+			float gb = (NH2 * NdotV) / VdotH;
+			float gc = (NH2 * NdotL) / VdotH;
+			float geometricalAttenuation = min(1.0, min(gb, gc));
+			
+			//DISTRIBUTION
+			float constant = 1.0 / ( PI * 0.05 * pow(NdotH, 4.0));
+			float exponant = (NdotH * NdotH - 1.0) / (0.05 * NdotH * NdotH);
+			float roughness = constant * exp(exponant);
+			
+			float fresnelMat = pow(1.0 - VdotH, 5.0)*0.02 + 0.98;
+			
 			if(NdotL>0.0)
 			{
-				float NdotH = max(dot(normal, H), 0.0);
-				float NdotV = max(dot(normal, view), 0.0);
-				float VdotH = max(dot(view, H), 0.0);
-				
-				float NH2 = 2.0 * NdotH;
-				float gb = (NH2 * NdotV) / VdotH;
-				float gc = (NH2 * NdotL) / VdotH;
-				float geometricalAttenuation = min(1.0, min(gb, gc));
-				
-				//DISTRIBUTION
-				float constant = 1.0 / ( PI * 0.05 * pow(NdotH, 4.0));
-				float exponant = (NdotH * NdotH - 1.0) / (0.05 * NdotH * NdotH);
-				float roughness = constant * exp(exponant);
-				
-				float fresnelMat = pow(1.0 - VdotH, 5.0)*0.2 + 0.98;
 				specularBRDF = (fresnelMat * geometricalAttenuation * roughness) / (NdotV * NdotL * 4.0);
 			}
 			
@@ -273,7 +279,7 @@
 			
 			float fresnelWater = 0.02 + 0.98 * pow(1.0 - dot(normal, view), 5.0);
 			
-			vec3 color = cook + mix(refraction , reflection, fresnelWater);
+			vec3 color = cook + mix(refraction/PI, reflection, fresnelWater)+ vec3(0.1,0.1,0.1);
 			
 			//HDR
 			color = vec3(1.0) - exp(-1.2*color);
@@ -283,19 +289,33 @@
 			
     }
      </script>
-</head>	
+</head>
 
 <body>
-    <div id="panel">
+<div id="panel" class="container-fluid">
+    <div class="row d-flex d-md-block flex-nowrap wrapper">
         <img id="spectrum" class="img"/>
-        <img id="hu"       class="img"/>	
-        <img id="spacial"   class="img"/>	
-        <input type = "text"    width="20" id="camera-height" disabled/>
-        <label id="cheight-lbl">camera height</label>
-        <label id="choppiness-lbl" for="choppiness">Choppiness</label>
-        <input id="choppiness" type="range" min="0" max="10" value="9" />
-	<label for="wireframe" id="wireframe-lbl">Wireframe toggle</label>
-	<input type="checkbox" id="wireframe"/> 
     </div>
-    <canvas id="canvas"></canvas>
-</body></html>
+    <div class="row d-flex d-md-block flex-nowrap wrapper">
+        <img id="hu" class="img"/>
+    </div>
+    <div class="row d-flex d-md-block flex-nowrap wrapper">
+        <img id="spacial" class="img"/>
+    </div>
+    <div class="row d-flex d-md-block flex-nowrap wrapper">
+        <label id="cheight-lbl">camera height</label>
+        <input type="text" id="camera-height" disabled/>
+    </div>
+    <div class="row d-flex d-md-block flex-nowrap wrapper">
+        <label id="choppiness-lbl" for="choppiness">Choppiness</label>
+        <input id="choppiness" type="range" min="0" max="10" value="9"/>
+    </div>
+    <div class="row d-flex d-md-block flex-nowrap wrapper">
+        <label for="wireframe" id="wireframe-lbl">Wireframe toggle</label>
+        <input type="checkbox" id="wireframe"/>
+    </div>
+    </div>
+</div>
+<canvas id="canvas"></canvas>
+</body>
+</html>
