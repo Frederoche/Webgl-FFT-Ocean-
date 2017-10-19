@@ -157,7 +157,7 @@
             camPos = cameraPosition;
               
             //ATTENUATION HORIZONT
-            float att = 1.3/pow(length(camPos - u), 1.0/2.0);
+            float att = 1.7/pow(length(camPos - u), 1.0/2.0);
             
             u.y = (d.y) * att;
             u.x = (u.x + d.x);
@@ -188,9 +188,7 @@
         uniform sampler2D displacement; 
         uniform sampler2D reflectionSampler;
         uniform sampler2D refractionSampler; 
-		
-        
-		
+
         varying vec3 camPos;
         varying vec4 wPosition;
         varying vec4 normalWorld; 
@@ -198,8 +196,8 @@
         
         varying vec4 eyespacePos;
         varying vec4 clipSpace;
-       
-	
+
+
         vec3 calcNormals(sampler2D text, vec2 texcoords) { 
 
             float texel = 1.0 / 128.0;
@@ -223,7 +221,7 @@
         void main(void) { 
             vec3 LIGHTCOLOR         = vec3(0.5, 0.5, 0.25); 
             vec3 SEA_WATER_COLOR    = vec3(0.05,0.2,0.25); 
-            vec4 LIGHT_POSITION     = vec4(1000.0,30.0,-1900.0, 1.0); 
+            vec4 LIGHT_POSITION     = vec4(1000.0, 30.0,-1900.0, 1.0); 
 			
 			float PI = 3.1415;
 
@@ -245,7 +243,7 @@
             reflectionCoord.y = 0.5*(clipSpace.w + clipSpace.y)/clipSpace.w;	
 
 			//DISTORTION
-            vec4 reflectionTex = texture2D(reflectionSampler, reflectionCoord + normal.xz*0.1);
+            vec4 reflectionTex = texture2D(reflectionSampler, reflectionCoord + normal.xz*0.5);
 
             vec3 refraction = SEA_WATER_COLOR; 
             vec3 reflection = reflectionTex.xyz;
@@ -284,8 +282,8 @@
 			
 			float fresnelWater = 0.02 + 0.98 * pow(1.0 - dot(normal, view), 5.0);
 			
-			vec3 color = cook + mix(refraction/PI, reflection, fresnelWater)+ vec3(0.1,0.1,0.1);
-			
+            vec3 color = cook + mix(refraction/PI, reflection, fresnelWater) + vec3(0.1,0.1,0.1);
+            
 			//HDR
 			color = vec3(1.0) - exp(-1.2*color);
 			
