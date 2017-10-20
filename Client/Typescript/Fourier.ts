@@ -18,7 +18,7 @@ namespace Ocean{
             transform = this.Forward(input);
             
 
-            for(let i = 0; i < input.length; i++)
+            for(let i = 0; i < input.length; i++) 
             {
                 transform[i] = Complex.Conj(transform[i]);
             }

@@ -8,18 +8,8 @@
     integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
     crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
-    <script src="Javascript/Complex.js"></script>
-    <script src="Javascript/Fourier.js"></script>
-    <script src="Javascript/Phillips.js"></script>
-    <script src="Javascript/buffer.js"></script>
-    <script src="Javascript/chunck.js"></script>
-    <script src="Javascript/camera.js"></script>
-    <script src="Javascript/ocean.js"></script>
-    <script src="Javascript/texture.js"></script>
-    <script src="Javascript/skybox.js"></script>
-    <script src="Javascript/plot.js"></script>
-    <script src="Javascript/scene.js"></script>
-    <script src="Javascript/FrameBuffer.js"></script>
+    <script src="Javascript/Ocean.js"></script>
+    
     <script src="gl-matrix.js"></script>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -157,7 +147,7 @@
             camPos = cameraPosition;
               
             //ATTENUATION HORIZONT
-            float att = 1.7/pow(length(camPos - u), 1.0/2.0);
+            float att = 2.0/pow(length(camPos - u), 1.0/2.0);
             
             u.y = (d.y) * att;
             u.x = (u.x + d.x);

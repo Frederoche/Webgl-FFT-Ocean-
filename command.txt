@@ -1,1 +1,0 @@
-tsc buffer.ts chunck.ts Complex.ts Fourier.ts ocean.ts Phillips.ts texture.ts skybox.ts scene.ts Camera.ts Plot.ts FrameBuffer.ts  --outDir ../Javascript
