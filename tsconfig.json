@@ -1,6 +1,7 @@
 {
     "compileOnSave": true,
     "files":[
+        "../Webgl-FFT-Ocean-/Client/Typescript/Licence.js", 
         "../Webgl-FFT-Ocean-/Client/Typescript/buffer.ts", 
         "../Webgl-FFT-Ocean-/Client/Typescript/chunck.ts", 
         "../Webgl-FFT-Ocean-/Client/Typescript/Complex.ts", 
@@ -12,12 +13,13 @@
         "../Webgl-FFT-Ocean-/Client/Typescript/scene.ts",
         "../Webgl-FFT-Ocean-/Client/Typescript/Camera.ts",
         "../Webgl-FFT-Ocean-/Client/Typescript/Plot.ts",
-        "../Webgl-FFT-Ocean-/Client/Typescript/FrameBuffer.ts"
+        "../Webgl-FFT-Ocean-/Client/Typescript/FrameBuffer.ts",
+        "../Webgl-FFT-Ocean-/Client/Typescript/gl-matrix.js"
     ],
     "compilerOptions": {
         "target": "es5",
-        "module": "commonjs",
         "sourceMap": true,
-        "out": "Client/Javascript/ocean.js"
+        "out": "Client/Javascript/ocean.js",
+        "allowJs": true
     }
 }
