@@ -355,7 +355,7 @@ window.onload = function () {
     var canvas = document.getElementById('canvas');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    var gl = canvas.getContext('webgl', { antialias: true });
+    var gl = canvas.getContext('experimental-webgl', { antialias: true });
     var engine = new Ocean.Engine(gl, canvas, gl.TRIANGLES);
     engine.load();
     engine.render();
