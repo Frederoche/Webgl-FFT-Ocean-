@@ -7,12 +7,6 @@ The static, dynamic Phillips spectrum and the inverse FFT of it is displayed on 
 To run the program:
 - Use nodejs app.js.
 
-Do work with:
-	- Google Chrome
-	- Opera
-
-Do not work with Edge or Firefox
-
 Commands:
   - W: toggle wireframe
   - Left, right, up, down arrow: displacement given a direction
