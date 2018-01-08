@@ -88,15 +88,24 @@
 				gl_FragColor = vec4(color, 1.0); //SKY COLOR
             
 			//SUN
-			for(float i=0.0; i < Pi*2.0;i+=0.1)
-			{
-				float x = cos(i)*0.025;
-				float y = sin(i)*0.025;
-	
-				if(wPos.y -0.2 < y && wPos.x - 0.62 < x && wPos.x -0.62 > -x && wPos.y -0.2 > -y)
-					gl_FragColor = vec4(1.0, 1.0, 0.5, 1.0)*2.0;
-			}
+            float r =  0.00052; //SUN RADIUS
 
+			for(float i=0.0; i < Pi*2.0; i+=0.1)
+			{
+				float x = cos(i)*0.015 + 0.62 - wPos.x;
+				float y = sin(i)*0.015 + 0.2  - wPos.y;
+	            
+                vec2 uv = vec2(wPos.x - 0.62, wPos.y - 0.2);
+                uv = vec2(1.0, -1.0)*uv;
+
+                if(x*x + y*y < r)
+                {
+                    vec4 sunColor = vec4(1.0, 1.0, 1.0, 1.0);
+                    float d = sqrt(dot(uv,uv));
+                    float u = smoothstep(sqrt(r) + 0.007, sqrt(r) - 0.007, d);
+                    gl_FragColor  = mix(vec4(color, 1.0), sunColor, u);
+                }
+			}
 	}
     </script>
 <script id="vertexShader" type="x-shader/x-vertex">
