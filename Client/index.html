@@ -5,7 +5,7 @@
     <script src="https://npmcdn.com/tether@1.2.4/dist/js/tether.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
-    <script src="Javascript/Ocean.min.js"></script>
+    <script src="Javascript/Ocean.js"></script>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <script id="skyBoxVertexShader" type="x-shader/x-vertex">
@@ -108,7 +108,7 @@
 			}
 	}
     </script>
-<script id="vertexShader" type="x-shader/x-vertex">
+<script id="vertexShader" type="x-shader/x-vertex">#version 300 es
         precision mediump float; 
         precision highp sampler2D;
 
@@ -123,17 +123,16 @@
           
         uniform sampler2D displacement; 
 
-        attribute vec3 position; 
-        attribute vec2 texCoord; 
+        in vec3 position; 
+        in vec2 texCoord; 
         
-        varying vec2 texcoord; 
-        varying vec4 clipSpace;
+        out vec2 texcoord; 
+        out vec4 clipSpace;
         
-        varying vec4 wPosition; 
-        varying vec4 pos; 
-        varying vec3 camPos;
-		
-		
+        out vec4 wPosition; 
+        out vec4 pos; 
+        out vec3 camPos;
+
         void main(void)
         { 
             
@@ -146,14 +145,15 @@
 
             texcoord = (u.xz + 1.0) * 0.5;
 
-			vec4 d  = texture2D(displacement, texcoord);
-	    
+            vec4 d   = texture(displacement, texcoord);
+            
+            
             camPos = cameraPosition;
               
             //ATTENUATION HORIZONT
             float att = 2.0/pow(length(camPos - u), 1.0/2.0);
             
-            u.y = (d.y) * att;
+            u.y = (d.y) * att * 1.2;
             u.x = (u.x + d.x);
             u.z = (u.z + d.z);
     		
@@ -173,23 +173,25 @@
             }
          }
     </script>
-<script id="fragmentShader" type="x-shader/x-fragment">
+<script id="fragmentShader" type="x-shader/x-fragment">#version 300 es
         precision highp float;
         precision highp sampler2D;
 
-        varying vec2 texcoord; 
+        in vec2 texcoord; 
 
         uniform sampler2D displacement; 
         uniform sampler2D reflectionSampler;
         uniform sampler2D refractionSampler; 
 
-        varying vec3 camPos;
-        varying vec4 wPosition;
-        varying vec4 normalWorld; 
-        varying vec4 pos; 
+        in vec3 camPos;
+        in vec4 wPosition;
+        in vec4 normalWorld; 
+        in vec4 pos; 
         
-        varying vec4 eyespacePos;
-        varying vec4 clipSpace;
+        in vec4 eyespacePos;
+        in vec4 clipSpace;
+
+        layout(location = 0) out vec4 outputColor;
 
 
         vec3 calcNormals(sampler2D text, vec2 texcoords) { 
@@ -197,12 +199,12 @@
             float texel = 1.0 / 128.0;
             float texelSize =   2.0/ 128.0; 
 
-            vec3 center = texture2D(text, texcoords).xyz; 
+            vec3 center = texture(text, texcoords).xyz; 
 
-            vec3 left   = vec3(-texelSize, 0.0,0.0)  + texture2D(text, texcoords + vec2(-texel, 0.0)).xyz - center; 
-            vec3 right  = vec3(texelSize, 0.0, 0.0)  + texture2D(text, texcoords + vec2(texel, 0.0)).xyz  - center; 
-            vec3 bottom = vec3(0.0, 0.0, texelSize)  + texture2D(text, texcoords + vec2(0.0, texel)).xyz  - center;
-            vec3 top    = vec3(0.0, 0.0, -texelSize) + texture2D(text, texcoords + vec2(0.0, -texel)).xyz - center; 
+            vec3 left   = vec3(-texelSize, 0.0,0.0)  + texture(text, texcoords + vec2(-texel, 0.0)).xyz - center; 
+            vec3 right  = vec3(texelSize, 0.0, 0.0)  + texture(text, texcoords + vec2(texel, 0.0)).xyz  - center; 
+            vec3 bottom = vec3(0.0, 0.0, texelSize)  + texture(text, texcoords + vec2(0.0, texel)).xyz  - center;
+            vec3 top    = vec3(0.0, 0.0, -texelSize) + texture(text, texcoords + vec2(0.0, -texel)).xyz - center; 
 
             vec3 topRight    = cross(right, top); 
             vec3 topLeft     = cross(top, left); 
@@ -213,8 +215,8 @@
         }
 		
         void main(void) { 
-            vec3 LIGHTCOLOR         = vec3(0.5, 0.5, 0.25); 
-            vec3 SEA_WATER_COLOR    = vec3(0.05,0.2,0.25); 
+            vec3 LIGHTCOLOR         = vec3(1.0, 1.0, 0.5); 
+            vec3 SEA_WATER_COLOR    = vec3(0.05,0.2,0.3); 
             vec4 LIGHT_POSITION     = vec4(1000.0, 30.0,-1900.0, 1.0); 
 			
 			float PI = 3.1415;
@@ -237,8 +239,8 @@
             reflectionCoord.y = 0.5*(clipSpace.w + clipSpace.y)/clipSpace.w;	
 
 			//DISTORTION
-            vec4 reflectionTex = texture2D(reflectionSampler, reflectionCoord + normal.xz*0.5);
-
+            vec4 reflectionTex = texture(reflectionSampler, reflectionCoord + normal.yz);
+    
             vec3 refraction = SEA_WATER_COLOR; 
             vec3 reflection = reflectionTex.xyz;
 			
@@ -250,7 +252,6 @@
 			float k = 0.1;
 			
 			//SPECULAR
-			
 			float NdotH = max(dot(normal, H), 0.0);
 			float NdotV = max(dot(normal, view), 0.0);
 			float VdotH = max(dot(view, H), 0.0);
@@ -265,7 +266,7 @@
 			float exponant = (NdotH * NdotH - 1.0) / (0.05 * NdotH * NdotH);
 			float roughness = constant * exp(exponant);
 			
-			float fresnelMat = pow(1.0 - VdotH, 5.0)*0.02 + 0.98;
+			float fresnelMat = pow(1.0 - VdotH, 5.0)*0.98 + 0.02;
 			
 			if(NdotL>0.0)
 			{
@@ -279,9 +280,9 @@
             vec3 color = cook + mix(refraction/PI, reflection, fresnelWater) + vec3(0.1,0.1,0.1);
             
 			//HDR
-			color = vec3(1.0) - exp(-1.2*color);
+			color = vec3(1.0) - exp(-1.5*color);
 			
-            gl_FragColor = vec4(color, 1.0);
+            outputColor = vec4(color, 1.0);
 
 			
     }

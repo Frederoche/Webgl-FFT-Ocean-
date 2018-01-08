@@ -2,7 +2,7 @@ namespace Ocean
 {
     export class Texture
     {
-        gl: WebGLRenderingContext;
+        gl: any;
         size: number;
         lambda:number;
         displacementTexture: WebGLTexture;
@@ -63,7 +63,7 @@ namespace Ocean
             this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.REPEAT);
             this.gl.generateMipmap(this.gl.TEXTURE_2D);
         
-            this.gl.texImage2D(this.gl.TEXTURE_2D, 0 , this.gl.RGBA, this.size, this.size, 0, this.gl.RGBA, this.gl.FLOAT, new Float32Array(dataArray));
+            this.gl.texImage2D(this.gl.TEXTURE_2D, 0 , this.gl.RGBA32F, this.size, this.size, 0, this.gl.RGBA, this.gl.FLOAT, new Float32Array(dataArray));
             this.gl.bindTexture(this.gl.TEXTURE_2D, null);
             return this;
         }
@@ -73,7 +73,7 @@ namespace Ocean
         public createTexture(callback)
         {
             
-             let image = new Image(512,512);
+             /*let image = new Image(512,512);
              let texture = this.gl.createTexture();
 
              
@@ -95,7 +95,7 @@ namespace Ocean
 
              }, false);
 
-             image.src = "images/Skybox2.jpg";
+             image.src = "images/Skybox2.jpg";*/
         }
     }
 

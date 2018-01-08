@@ -288,6 +288,7 @@ var Ocean;
             this.ext = this.gl.getExtension("ANGLE_instanced_arrays");
             this.floatExtension = this.gl.getExtension("OES_texture_float");
             this.gl.getExtension("OES_texture_float_linear");
+            this.gl.getExtension("EXT_color_buffer_float");
             this.Phillips = new Ocean.Phillips(this.gl, 64);
             this.h0 = this.Phillips.createH0();
             this.h1 = this.Phillips.createH1();
@@ -355,7 +356,7 @@ window.onload = function () {
     var canvas = document.getElementById('canvas');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    var gl = canvas.getContext('experimental-webgl', { antialias: true });
+    var gl = canvas.getContext('webgl2', { antialias: true });
     var engine = new Ocean.Engine(gl, canvas, gl.TRIANGLES);
     engine.load();
     engine.render();
@@ -592,25 +593,34 @@ var Ocean;
             this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.REPEAT);
             this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.REPEAT);
             this.gl.generateMipmap(this.gl.TEXTURE_2D);
-            this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.size, this.size, 0, this.gl.RGBA, this.gl.FLOAT, new Float32Array(dataArray));
+            this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA32F, this.size, this.size, 0, this.gl.RGBA, this.gl.FLOAT, new Float32Array(dataArray));
             this.gl.bindTexture(this.gl.TEXTURE_2D, null);
             return this;
         };
         Texture.prototype.createTexture = function (callback) {
-            var _this = this;
-            var image = new Image(512, 512);
-            var texture = this.gl.createTexture();
-            image.addEventListener("load", function () {
-                _this.gl.bindTexture(_this.gl.TEXTURE_2D, texture);
-                _this.gl.texParameteri(_this.gl.TEXTURE_2D, _this.gl.TEXTURE_MIN_FILTER, _this.gl.LINEAR_MIPMAP_LINEAR);
-                _this.gl.texParameteri(_this.gl.TEXTURE_2D, _this.gl.TEXTURE_MAG_FILTER, _this.gl.LINEAR_MIPMAP_LINEAR);
-                _this.gl.texParameteri(_this.gl.TEXTURE_2D, _this.gl.TEXTURE_WRAP_S, _this.gl.CLAMP_TO_EDGE);
-                _this.gl.texParameteri(_this.gl.TEXTURE_2D, _this.gl.TEXTURE_WRAP_T, _this.gl.CLAMP_TO_EDGE);
-                _this.gl.texImage2D(_this.gl.TEXTURE_2D, 0, _this.gl.RGBA, _this.gl.RGBA, _this.gl.UNSIGNED_BYTE, image);
-                _this.gl.bindTexture(_this.gl.TEXTURE_2D, null);
-                callback(texture);
+            /*let image = new Image(512,512);
+            let texture = this.gl.createTexture();
+
+            
+
+            image.addEventListener("load", ()=>{
+               
+               this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
+               
+               this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR_MIPMAP_LINEAR);
+               this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.LINEAR_MIPMAP_LINEAR);
+               this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
+               this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
+               
+               
+               this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA,  this.gl.RGBA, this.gl.UNSIGNED_BYTE,<HTMLImageElement> image);
+
+               this.gl.bindTexture(this.gl.TEXTURE_2D, null);
+               callback(texture);
+
             }, false);
-            image.src = "images/Skybox2.jpg";
+
+            image.src = "images/Skybox2.jpg";*/
         };
         return Texture;
     }());

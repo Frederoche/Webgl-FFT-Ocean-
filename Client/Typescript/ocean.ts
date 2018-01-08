@@ -6,7 +6,7 @@ namespace Ocean
 {
     export class Engine
     {
-         gl: WebGLRenderingContext;
+         gl: any;
          canvas: HTMLCanvasElement;
          wireframe: number;
 
@@ -59,6 +59,7 @@ namespace Ocean
             this.floatExtension = this.gl.getExtension("OES_texture_float");
 
             this.gl.getExtension("OES_texture_float_linear");
+            this.gl.getExtension("EXT_color_buffer_float");
 
             this.Phillips = new Phillips(this.gl, 64);
 
@@ -155,7 +156,7 @@ window.onload = () => {
     canvas.width    = window.innerWidth;
     canvas.height   = window.innerHeight;
 
-    let gl          = <WebGLRenderingContext> canvas.getContext('experimental-webgl',{antialias: true});
+    let gl          = <any> canvas.getContext('webgl2',{antialias: true});
     var engine      = new Ocean.Engine(gl, canvas, gl.TRIANGLES); 
 
     engine.load();
