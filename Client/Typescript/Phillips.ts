@@ -16,9 +16,9 @@ namespace Ocean{
         {
             this.size = size;
             this.gl = gl;
-            this.length = 1100.0;
+            this.length = 900.0;
             this.windspeed = 50.0;
-            this.windX = -2.0;
+            this.windX = -0.5;
             this.windY = -0.5;
             this.A = 0.0001;
             this.g = 9.81;
