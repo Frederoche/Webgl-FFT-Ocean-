@@ -72,7 +72,7 @@ namespace Ocean
 
             this.reflection = new FrameBuffer(window.innerWidth, window.innerHeight, this.gl); 
 
-            this.camera = new Camera(vec3.create([26,2,326]), vec3.create([26.417,2,325.4]), vec3.create([0,1,0]));
+            this.camera = new Camera(vec3.create([26,4.0,326]), vec3.create([26.417,4.0,325.4]), vec3.create([0,1,0]));
             this.birdCamera = new Camera(vec3.create([26,140,400.0]), vec3.create([26.417,131.32,325.4]), vec3.create([0,1,0]));
 
             this.displacementTexture = new Texture(this.gl, 64);
