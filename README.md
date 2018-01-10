@@ -29,5 +29,5 @@ Further work:
 
 <a href ="https://aqueous-harbor-55474.herokuapp.com/">Demo (projected grid)</a><br/>
 <br>
-<a href="https://www.youtube.com/watch?v=AX9YhAJr3J8">Video</a>
+<a href="https://www.youtube.com/watch?v=eGQRCdBPOO4">Video</a>
 
