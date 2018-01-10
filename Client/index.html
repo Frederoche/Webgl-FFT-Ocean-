@@ -256,7 +256,7 @@
             reflectionCoord.y = 0.5*(clipSpace.w + clipSpace.y)/clipSpace.w;	
 
 			//DISTORTION
-            vec4 reflectionTex = texture(reflectionSampler, reflectionCoord + 0.01*normal.yz);
+            vec4 reflectionTex = texture(reflectionSampler, reflectionCoord + 0.1*normal.yz);
     
             vec3 refraction = SEA_WATER_COLOR; 
             vec3 reflection = reflectionTex.xyz;
