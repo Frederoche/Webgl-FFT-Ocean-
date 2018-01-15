@@ -5,7 +5,7 @@
     <script src="https://npmcdn.com/tether@1.2.4/dist/js/tether.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
-    <script src="Javascript/Ocean.min.js"></script>
+    <script src="Javascript/ocean.js"></script>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <script id="skyBoxVertexShader" type="x-shader/x-vertex">
@@ -103,7 +103,8 @@
                     vec4 sunColor = vec4(1.0, 1.0, 1.0, 1.0);
                     float d = sqrt(dot(uv,uv));
                     float u = smoothstep(sqrt(r) + 0.007, sqrt(r) - 0.007, d);
-                    gl_FragColor  = mix(vec4(color, 1.0), sunColor, u);
+                    float v = smoothstep(sqrt(r) + 0.005, sqrt(r) - 0.005, d);
+                    gl_FragColor  = mix(vec4(color, 1.0), sunColor, u) +v * vec4(1.0, 1.0, 0.0, 1.0);
                 }
 			}
 	}
@@ -259,7 +260,7 @@
             vec4 reflectionTex = texture(reflectionSampler, reflectionCoord + 0.1*normal.yz);
     
             vec3 refraction = SEA_WATER_COLOR; 
-            vec3 reflection = reflectionTex.xyz;
+            vec3 reflection = reflectionTex.xyz; 
 			
 			//COOK TORRANCE 
 			float NdotL = max(dot(normal, lightDir), 0.0);
