@@ -100,11 +100,14 @@
 
                 if(x*x + y*y < r)
                 {
-                    vec4 sunColor = vec4(1.0, 1.0, 1.0, 1.0);
-                    float d = sqrt(dot(uv,uv));
-                    float u = smoothstep(sqrt(r) + 0.007, sqrt(r) - 0.007, d);
-                    float v = smoothstep(sqrt(r) + 0.005, sqrt(r) - 0.005, d);
-                    gl_FragColor  = mix(vec4(color, 1.0), sunColor, u) +v * vec4(1.0, 1.0, 0.0, 1.0);
+                    vec4 sunColor = vec4(1.2, 1.2, 1.2, 1.0);
+                    float d = length(uv);
+                    float u = smoothstep(sqrt(r) + 0.0079, sqrt(r) - 0.0079, d);
+                    float v = smoothstep(sqrt(r) + 0.0160, sqrt(r) - 0.0160, d);
+                    
+                    vec4 sunColorResult = mix(vec4(color, 1.0), sunColor, u) + v * mix(vec4(2.0, 2.0, 0.0, 1.0), vec4(1.0,0.0,0.0,1.0), 0.8);
+
+                    gl_FragColor  = sunColorResult;
                 }
 			}
 	}
