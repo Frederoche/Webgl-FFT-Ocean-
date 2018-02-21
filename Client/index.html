@@ -139,7 +139,7 @@
 
         vec4 getTexture(sampler2D sampler, vec2 coord)
         {
-            vec4 d0 = texture(sampler, coord*0.1);
+            vec4 d0 = texture(sampler, coord);
             vec4 d1 = texture(sampler, coord/8.0)*8.0;
             vec4 d3 = texture(sampler, coord/2.0)*2.0;
 
@@ -163,7 +163,7 @@
             camPos = cameraPosition;
               
             //ATTENUATION HORIZONT
-            float att = 5.0/pow(length(camPos - u), 1.0/2.0);
+            float att = 4.0/pow(length(camPos - u), 1.0/2.0);
             
             u.y = (d.y) * att;
             u.x = (u.x + d.x);
@@ -207,7 +207,7 @@
 
         vec4 getTexture(sampler2D sampler, vec2 coord)
         {
-            vec4 d0 = texture(sampler, coord*0.1);
+            vec4 d0 = texture(sampler, coord);
             vec4 d1 = texture(sampler, coord/8.0)*8.0;
             vec4 d3 = texture(sampler, coord/2.0)*2.0;
 
